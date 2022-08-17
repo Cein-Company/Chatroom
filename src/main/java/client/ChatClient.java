@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
 
-import static client.ChatClientCLI.getActiveUsers;
 import static utils.consts.ConsoleColors.*;
 
 public class ChatClient {
@@ -52,11 +51,11 @@ public class ChatClient {
                             break;
                         }
 
-                        if (messageToSend.equals(""))
+                        if (messageToSend.equals("")) {
                             continue;
+                        }
 
-                        bufferedWriter.write(coloredUsername + colon +
-                                WHITE_BOLD_BRIGHT + messageToSend + RESET);
+                        bufferedWriter.write(coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
                     }
@@ -85,8 +84,8 @@ public class ChatClient {
                             if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
                                 System.out.println(msgFromGroupChat);
 
-                                getActiveUsers().remove(username);
-                                ActiveUsersFiles.writeUsers(getActiveUsers());
+                                ChatClientCLI.getActiveUsers().remove(username);
+                                ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
 
                                 closeEverything(socket, bufferedReader, bufferedWriter);
 
@@ -107,15 +106,17 @@ public class ChatClient {
 
     public void clientLeaving() {
         try {
-            bufferedWriter.write(RED_BOLD_BRIGHT + "SERVER: " + RESET +
-                    coloredUsername + RED_BOLD_BRIGHT + " has left the chatroom." + RESET);
+            String leftChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
+                    coloredUsername + RED_BOLD_BRIGHT + " has left the chatroom." + RESET;
+
+            bufferedWriter.write(leftChatMessage);
             bufferedWriter.newLine();
             bufferedWriter.flush();
 
             System.out.println(RED_BOLD_BRIGHT + "You have left the chatroom. Goodbye." + RESET);
 
-            getActiveUsers().remove(username);
-            ActiveUsersFiles.writeUsers(getActiveUsers());
+            ChatClientCLI.getActiveUsers().remove(username);
+            ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
 
             closeEverything(socket, bufferedReader, bufferedWriter);
         } catch (IOException e) {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class ActiveUsersFiles {
     private static final Path activeUsersPath = Paths.get( File.separator + "ActiveUsers.txt");
 
-    public static void writeUsers(ArrayList<String> activeUsers) {
+    public static void writeActiveUsers(ArrayList<String> activeUsers) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(activeUsersPath.toString()))) {
             out.writeObject(activeUsers);
         } catch (IOException e) {
@@ -17,7 +17,7 @@ public class ActiveUsersFiles {
         }
     }
 
-    public static ArrayList<String> readUsers() {
+    public static ArrayList<String> readActiveUsers() {
         try {
             new File(activeUsersPath.toString()).createNewFile();
         } catch (IOException e) {

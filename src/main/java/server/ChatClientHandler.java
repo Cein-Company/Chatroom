@@ -1,5 +1,7 @@
 package server;
 
+import files.ChatMessagesFiles;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,8 +26,14 @@ public class ChatClientHandler implements Runnable {
 
             clients.add(this);
 
-            broadcastMessage(RED_BOLD_BRIGHT + "SERVER: " + RESET +
-                    clientUsername + RED_BOLD_BRIGHT + " has entered the chat." + RESET);
+            String enteredChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
+                    clientUsername + RED_BOLD_BRIGHT + " has entered the chat." + RESET;
+
+            readMessages();
+            saveMessages(enteredChatMessage);
+
+            System.out.println(enteredChatMessage);
+            broadcastMessage(enteredChatMessage);
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -40,6 +48,8 @@ public class ChatClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
 
                 if (messageFromClient != null && messageFromClient.length() != 0) {
+                    saveMessages(messageFromClient);
+
                     if (messageFromClient.contains("has left the chatroom"))
                         closeEverything(socket, bufferedReader, bufferedWriter);
 
@@ -98,6 +108,36 @@ public class ChatClientHandler implements Runnable {
                 bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void saveMessages(String messageToSave) {
+        ArrayList<String> tempMessages = ChatMessagesFiles.readChatMessages();
+        if (tempMessages != null) {
+            ChatServer.getChatMessages().removeAll(ChatServer.getChatMessages());
+            ChatServer.getChatMessages().addAll(tempMessages);
+        }
+
+        ChatServer.getChatMessages().add(messageToSave);
+        ChatMessagesFiles.writeChatMessages(ChatServer.getChatMessages());
+    }
+
+    public void readMessages() {
+        ArrayList<String> tempMessages = ChatMessagesFiles.readChatMessages();
+        if (tempMessages != null) {
+            ChatServer.getChatMessages().removeAll(ChatServer.getChatMessages());
+            ChatServer.getChatMessages().addAll(tempMessages);
+        }
+
+        for (String oldMessage : ChatServer.getChatMessages()) {
+            try {
+                bufferedWriter.write(oldMessage);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
+                break;
+            }
         }
     }
 

@@ -3,13 +3,14 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 import static server.ChatClientHandler.clients;
 import static utils.consts.ConsoleColors.*;
 
 public class ChatServer {
+    private static final ArrayList<String> chatMessages = new ArrayList<>();
+
     private static ServerSocket serverSocket;
     private static boolean serverOn = false;
 
@@ -66,6 +67,10 @@ public class ChatServer {
 
     public static boolean isServerOn() {
         return serverOn;
+    }
+
+    public static ArrayList<String> getChatMessages() {
+        return chatMessages;
     }
 
     public static void main(String[] args) {

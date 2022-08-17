@@ -1,7 +1,7 @@
 package client;
 
 import files.ActiveUsersFiles;
-import files.UserFiles;
+import files.UsersFiles;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -80,7 +80,7 @@ public class ChatClientCLI {
             }
 
             users.put(username, password);
-            UserFiles.writeUsers(users);
+            UsersFiles.writeUsers(users);
 
             startChat(username);
 
@@ -89,9 +89,9 @@ public class ChatClientCLI {
     }
 
     private static void login() {
-        ArrayList<String> temp = ActiveUsersFiles.readUsers();
-        if (temp != null)
-            activeUsers.addAll(temp);
+        ArrayList<String> tempActiveUsers = ActiveUsersFiles.readActiveUsers();
+        if (tempActiveUsers != null)
+            activeUsers.addAll(tempActiveUsers);
 
         String username;
         String password;
@@ -141,7 +141,7 @@ public class ChatClientCLI {
                 "To exit the chatroom, just write '/exit'.\n" + RESET);
 
         activeUsers.add(username);
-        ActiveUsersFiles.writeUsers(activeUsers);
+        ActiveUsersFiles.writeActiveUsers(activeUsers);
 
         try {
             Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
@@ -162,7 +162,7 @@ public class ChatClientCLI {
     }
 
     public static void main(String[] args) {
-        Map<String, String> temp = UserFiles.readUsers();
+        Map<String, String> temp = UsersFiles.readUsers();
         if (temp != null) getUsers().putAll(temp);
 
         startMenu();
