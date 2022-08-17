@@ -136,19 +136,20 @@ public class ChatClientCLI {
     }
 
     private static void startChat(String username) {
-        System.out.println(CYAN_BOLD_BRIGHT +
-                "Login successful. You can start chatting now.\n" +
-                "To exit the chatroom, just write '/exit'.\n" + RESET);
-
-        activeUsers.add(username);
-        ActiveUsersFiles.writeActiveUsers(activeUsers);
-
         try {
             Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
             ChatClient client = new ChatClient(socket, username);
+
+            System.out.println(CYAN_BOLD_BRIGHT +
+                    "Login successful. You can start chatting now.\n" +
+                    "To exit the chatroom, just write '/exit'.\n" + RESET);
+
+            addActiveUsers(username);
+
             client.listenForMessage();
             client.sendMessage();
         } catch (IOException e) {
+            System.out.println(RED_BOLD_BRIGHT + "NO SERVER WAS FOUND" + RESET);
             e.printStackTrace();
         }
     }
@@ -161,9 +162,20 @@ public class ChatClientCLI {
         return activeUsers;
     }
 
+    public static void addActiveUsers(String username) {
+        activeUsers.add(username);
+        ActiveUsersFiles.writeActiveUsers(activeUsers);
+    }
+
+    public static void removeActiveUsers(String username) {
+        activeUsers.remove(username);
+        ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
+    }
+
     public static void main(String[] args) {
         Map<String, String> temp = UsersFiles.readUsers();
-        if (temp != null) getUsers().putAll(temp);
+        if (temp != null)
+            getUsers().putAll(temp);
 
         startMenu();
     }

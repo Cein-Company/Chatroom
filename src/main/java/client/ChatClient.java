@@ -34,9 +34,7 @@ public class ChatClient {
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
-            bufferedWriter.write(coloredUsername);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+            writeWithBuffered(coloredUsername);
 
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()) {
@@ -55,9 +53,7 @@ public class ChatClient {
                             continue;
                         }
 
-                        bufferedWriter.write(coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
+                        writeWithBuffered(coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET);
                     }
                 }
             }
@@ -109,14 +105,9 @@ public class ChatClient {
             String leftChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
                     coloredUsername + RED_BOLD_BRIGHT + " has left the chatroom." + RESET;
 
-            bufferedWriter.write(leftChatMessage);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+            writeWithBuffered(leftChatMessage);
 
             System.out.println(RED_BOLD_BRIGHT + "You have left the chatroom. Goodbye." + RESET);
-
-            ChatClientCLI.getActiveUsers().remove(username);
-            ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
 
             closeEverything(socket, bufferedReader, bufferedWriter);
         } catch (IOException e) {
@@ -124,7 +115,15 @@ public class ChatClient {
         }
     }
 
+    private void writeWithBuffered(String text) throws IOException {
+        bufferedWriter.write(text);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
+
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+        ChatClientCLI.removeActiveUsers(username);
+
         try {
             if (socket != null)
                 socket.close();
