@@ -81,6 +81,5 @@ public class ConsoleColors {
             "\033[1;94m",  // BLUE
             "\033[1;95m",  // PURPLE
             "\033[1;96m",  // CYAN
-            "\033[1;97m"   // WHITE
     };
 }

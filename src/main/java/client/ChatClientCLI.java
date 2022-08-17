@@ -4,6 +4,7 @@ import files.ActiveUsersFiles;
 import files.UserFiles;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class ChatClientCLI {
     private static final Map<String, String> users = new HashMap<>();
     private static final ArrayList<String> activeUsers = new ArrayList<>();
 
-    static void startMenu(Socket socket) {
+    static void startMenu() {
         System.out.println(
                 """
                 \033[1;97mWelcome to our local chatroom.
@@ -35,19 +36,13 @@ public class ChatClientCLI {
 
             switch (choice) {
                 case "1":
-                    signUp(socket);
+                    signUp();
                     break label;
                 case "2":
-                    login(socket);
+                    login();
                     break label;
                 case "3":
-                    try {
-                        System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom." + RESET);
-                        socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
+                    System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom." + RESET);
                     break label;
                 case "":
                     continue;
@@ -58,7 +53,7 @@ public class ChatClientCLI {
         }
     }
 
-    private static void signUp(Socket socket) {
+    private static void signUp() {
         String username;
         String password;
 
@@ -67,7 +62,7 @@ public class ChatClientCLI {
             username = new Scanner(System.in).nextLine();
 
             if (username.equals("0")) {
-                startMenu(socket);
+                startMenu();
                 return;
             }
 
@@ -80,7 +75,7 @@ public class ChatClientCLI {
             password = new Scanner(System.in).nextLine();
 
             if (password.equals("0")) {
-                startMenu(socket);
+                startMenu();
                 return;
             }
 
@@ -93,13 +88,21 @@ public class ChatClientCLI {
             System.out.println(CYAN_BOLD_BRIGHT +
                     "Sign in successful. You can start chatting now.\n" +
                     "To exit the chatroom, just write 'exit'.\n" + RESET);
+
+            try {
+                Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
+                ChatClient client = new ChatClient(socket, username);
+                client.listenForMessage();
+                client.sendMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             break;
         }
-
-        ChatClient.runChat(socket, username);
     }
 
-    private static void login(Socket socket) {
+    private static void login() {
         ArrayList<String> temp = ActiveUsersFiles.readUsers();
         if (temp != null)
             activeUsers.addAll(temp);
@@ -112,7 +115,7 @@ public class ChatClientCLI {
             username = new Scanner(System.in).nextLine();
 
             if (username.equals("0")) {
-                startMenu(socket);
+                startMenu();
                 return;
             }
 
@@ -123,7 +126,7 @@ public class ChatClientCLI {
 
             if (activeUsers.contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "User is already in the chatroom." + RESET);
-                startMenu(socket);
+                startMenu();
                 return;
             }
 
@@ -131,7 +134,7 @@ public class ChatClientCLI {
             password = new Scanner(System.in).nextLine();
 
             if (password.equals("0")) {
-                startMenu(socket);
+                startMenu();
                 return;
             }
 
@@ -147,10 +150,17 @@ public class ChatClientCLI {
             activeUsers.add(username);
             ActiveUsersFiles.writeUsers(activeUsers);
 
+            try {
+                Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
+                ChatClient client = new ChatClient(socket, username);
+                client.listenForMessage();
+                client.sendMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             break;
         }
-
-        ChatClient.runChat(socket, username);
     }
 
     public static Map<String, String> getUsers() {
@@ -159,5 +169,12 @@ public class ChatClientCLI {
 
     public static ArrayList<String> getActiveUsers() {
         return activeUsers;
+    }
+
+    public static void main(String[] args) {
+        Map<String, String> temp = UserFiles.readUsers();
+        if (temp != null) getUsers().putAll(temp);
+
+        startMenu();
     }
 }

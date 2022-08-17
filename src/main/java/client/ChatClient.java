@@ -1,33 +1,131 @@
 package client;
 
-import files.UserFiles;
+import files.ActiveUsersFiles;
 
-import java.io.IOException;
-import java.net.InetAddress;
+import java.io.*;
 import java.net.Socket;
-import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 
-import static client.ChatClientCLI.*;
+import static client.ChatClientCLI.getActiveUsers;
+import static utils.consts.ConsoleColors.*;
 
 public class ChatClient {
-    public static void main(String[] args) {
-        Map<String, String> temp = UserFiles.readUsers();
-        if (temp != null)
-            getUsers().putAll(temp);
+    private Socket socket;
+    private String username;
+    private String coloredUsername;
+    private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
+    private final String CLIENT_COLOR;
 
-        final int portNumber = 4444;
+    public ChatClient(Socket socket, String username) {
+        this.CLIENT_COLOR = BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
 
         try {
-            Socket socket = new Socket(InetAddress.getLoopbackAddress(), portNumber);
-            startMenu(socket);
+            this.socket = socket;
+            this.username = username;
+            this.coloredUsername = CLIENT_COLOR + this.username + RESET;
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    public void sendMessage() {
+        final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
+
+        try {
+            bufferedWriter.write(coloredUsername);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            Scanner scanner = new Scanner(System.in);
+            while (socket.isConnected()) {
+                System.out.print(coloredUsername + colon);
+
+                if (scanner.hasNext()) {
+                    String messageToSend = scanner.nextLine();
+
+                    if (messageToSend != null) {
+                        if (messageToSend.equals("exit")) {
+                            clientLeaving();
+                            break;
+                        }
+
+                        if (messageToSend.equals(""))
+                            continue;
+
+                        bufferedWriter.write(coloredUsername + colon +
+                                WHITE_BOLD_BRIGHT + messageToSend + RESET);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    public void listenForMessage() {
+        final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
+
+        new Thread(() -> {
+            String msgFromGroupChat;
+
+            while (socket.isConnected()) {
+                try {
+                    if (bufferedReader.ready()) {
+                        msgFromGroupChat = bufferedReader.readLine();
+
+                        if (msgFromGroupChat != null && msgFromGroupChat.length() != 0) {
+                            for (int i = 0; i < username.length() + 2; i++)
+                                System.out.print("\b");
+
+                            System.out.println(msgFromGroupChat);
+                            System.out.print(coloredUsername + colon);
+                        }
+                    }
+                } catch (IOException e) {
+                    closeEverything(socket, bufferedReader, bufferedWriter);
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    public void clientLeaving() {
+        try {
+            bufferedWriter.write(RED_BOLD_BRIGHT + "SERVER: " + RESET +
+                    coloredUsername + RED_BOLD_BRIGHT + " has left the chatroom." + RESET);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            System.out.println(RED_BOLD_BRIGHT + "You have left the chatroom. Goodbye." + RESET);
+
+            getActiveUsers().remove(username);
+            ActiveUsersFiles.writeUsers(getActiveUsers());
+
+            closeEverything(socket, bufferedReader, bufferedWriter);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void runChat(Socket socket, String username) {
-        ChatServerRunnable server = new ChatServerRunnable(socket, username);
-        Thread thread = new Thread(server);
-        thread.start();
+    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+        try {
+            if (socket != null)
+                socket.close();
+
+            if (bufferedWriter != null)
+                bufferedWriter.close();
+
+            if (bufferedReader != null)
+                bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
