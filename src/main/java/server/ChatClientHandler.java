@@ -3,11 +3,9 @@ package server;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
-import static utils.consts.ConsoleColors.*;
+import static utils.consts.ConsoleColors.RED_BOLD_BRIGHT;
+import static utils.consts.ConsoleColors.RESET;
 
 public class ChatClientHandler implements Runnable {
     public static ArrayList<ChatClientHandler> clients = new ArrayList<>();
@@ -42,7 +40,6 @@ public class ChatClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
 
                 if (messageFromClient != null && messageFromClient.length() != 0) {
-
                     if (messageFromClient.contains("has left the chatroom"))
                         closeEverything(socket, bufferedReader, bufferedWriter);
 
@@ -80,6 +77,16 @@ public class ChatClientHandler implements Runnable {
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
 
+        if (!ChatServer.isServerOn()) {
+            try {
+                bufferedWriter.write("SERVER SHUTDOWN");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             if (socket != null)
                 socket.close();
@@ -92,6 +99,14 @@ public class ChatClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public BufferedReader getBufferedReader() {
+        return bufferedReader;
     }
 
     public BufferedWriter getBufferedWriter() {

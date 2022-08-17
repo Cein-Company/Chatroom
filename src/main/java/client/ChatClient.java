@@ -16,10 +16,9 @@ public class ChatClient {
     private String coloredUsername;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private final String CLIENT_COLOR;
 
     public ChatClient(Socket socket, String username) {
-        this.CLIENT_COLOR = BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
+        String CLIENT_COLOR = BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
 
         try {
             this.socket = socket;
@@ -48,7 +47,7 @@ public class ChatClient {
                     String messageToSend = scanner.nextLine();
 
                     if (messageToSend != null) {
-                        if (messageToSend.equals("exit")) {
+                        if (messageToSend.equals("/exit")) {
                             clientLeaving();
                             break;
                         }
@@ -83,6 +82,17 @@ public class ChatClient {
                             for (int i = 0; i < username.length() + 2; i++)
                                 System.out.print("\b");
 
+                            if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
+                                System.out.println(msgFromGroupChat);
+
+                                getActiveUsers().remove(username);
+                                ActiveUsersFiles.writeUsers(getActiveUsers());
+
+                                closeEverything(socket, bufferedReader, bufferedWriter);
+
+                                break;
+                            }
+
                             System.out.println(msgFromGroupChat);
                             System.out.print(coloredUsername + colon);
                         }
@@ -108,7 +118,6 @@ public class ChatClient {
             ActiveUsersFiles.writeUsers(getActiveUsers());
 
             closeEverything(socket, bufferedReader, bufferedWriter);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

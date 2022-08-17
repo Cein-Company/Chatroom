@@ -3,14 +3,21 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import static server.ChatClientHandler.clients;
 import static utils.consts.ConsoleColors.*;
 
-public record ChatServer(ServerSocket serverSocket) {
-    public void startServer() {
+public class ChatServer {
+    private static ServerSocket serverSocket;
+    private static boolean serverOn = false;
+
+    public static void startServer() {
+        serverOn = true;
+
         System.out.println(RED_BOLD_BRIGHT + "SERVER CONNECTED!\n" +
-                "Type 'exit' to close the server." + RESET);
+                "Type '/exit' to close the server." + RESET);
         listenForServerExit();
 
         try {
@@ -26,16 +33,7 @@ public record ChatServer(ServerSocket serverSocket) {
         }
     }
 
-    public void closeServerSocket() {
-        try {
-            if (serverSocket != null)
-                serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void listenForServerExit() {
+    public static void listenForServerExit() {
         new Thread(() -> {
             String scannedMessage;
             Scanner scanner = new Scanner(System.in);
@@ -43,18 +41,37 @@ public record ChatServer(ServerSocket serverSocket) {
             while (!serverSocket.isClosed()) {
                 if (scanner.hasNext()) {
                     scannedMessage = scanner.nextLine();
-                    if (scannedMessage.equals("exit"))
+
+                    if (scannedMessage != null && scannedMessage.equals("/exit"))
                         closeServerSocket();
                 }
             }
         }).start();
     }
 
+    public static void closeServerSocket() {
+        serverOn = false;
+
+        try {
+            ArrayList<ChatClientHandler> tempClients = new ArrayList<>(clients);
+            for(ChatClientHandler client : tempClients)
+                client.closeEverything(client.getSocket(), client.getBufferedReader(), client.getBufferedWriter());
+
+            if (serverSocket != null && !serverSocket.isClosed())
+                serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isServerOn() {
+        return serverOn;
+    }
+
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(4444);
-            ChatServer chatServer = new ChatServer(serverSocket);
-            chatServer.startServer();
+            serverSocket = new ServerSocket(4444);
+            startServer();
         } catch (IOException e) {
             System.err.println(RED_BOLD_BRIGHT + "Could not listen to port." + RESET);
             e.printStackTrace();

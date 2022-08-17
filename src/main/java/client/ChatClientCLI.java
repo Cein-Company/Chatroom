@@ -18,7 +18,7 @@ public class ChatClientCLI {
     private static final Map<String, String> users = new HashMap<>();
     private static final ArrayList<String> activeUsers = new ArrayList<>();
 
-    static void startMenu() {
+    private static void startMenu() {
         System.out.println(
                 """
                 \033[1;97mWelcome to our local chatroom.
@@ -82,21 +82,7 @@ public class ChatClientCLI {
             users.put(username, password);
             UserFiles.writeUsers(users);
 
-            activeUsers.add(username);
-            ActiveUsersFiles.writeUsers(activeUsers);
-
-            System.out.println(CYAN_BOLD_BRIGHT +
-                    "Sign in successful. You can start chatting now.\n" +
-                    "To exit the chatroom, just write 'exit'.\n" + RESET);
-
-            try {
-                Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
-                ChatClient client = new ChatClient(socket, username);
-                client.listenForMessage();
-                client.sendMessage();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            startChat(username);
 
             break;
         }
@@ -143,23 +129,27 @@ public class ChatClientCLI {
                 continue;
             }
 
-            System.out.println(CYAN_BOLD_BRIGHT +
-                    "Login successful. You can start chatting now.\n" +
-                    "To exit the chatroom, just write 'exit'.\n" + RESET);
-
-            activeUsers.add(username);
-            ActiveUsersFiles.writeUsers(activeUsers);
-
-            try {
-                Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
-                ChatClient client = new ChatClient(socket, username);
-                client.listenForMessage();
-                client.sendMessage();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            startChat(username);
 
             break;
+        }
+    }
+
+    private static void startChat(String username) {
+        System.out.println(CYAN_BOLD_BRIGHT +
+                "Login successful. You can start chatting now.\n" +
+                "To exit the chatroom, just write '/exit'.\n" + RESET);
+
+        activeUsers.add(username);
+        ActiveUsersFiles.writeUsers(activeUsers);
+
+        try {
+            Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
+            ChatClient client = new ChatClient(socket, username);
+            client.listenForMessage();
+            client.sendMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
