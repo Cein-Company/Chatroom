@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.*;
 
 import static server.ChatClientHandler.clients;
-import static utils.consts.ConsoleColors.*;
+import static utils.consts.ConsoleDetail.*;
 
 public class ChatServer {
     private static final ArrayList<String> chatMessages = new ArrayList<>();

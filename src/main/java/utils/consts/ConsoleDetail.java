@@ -1,7 +1,9 @@
 package utils.consts;
 
+import java.text.SimpleDateFormat;
+
 //  ConsoleColors -> Clrs
-public class ConsoleColors {
+public class ConsoleDetail {
     // Reset
     public static final String RESET = "\033[0m";  // Text Reset
 
@@ -75,6 +77,7 @@ public class ConsoleColors {
     public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
     public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
 
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     public static final String[] BOLD_BRIGHTS_COLORS = {
             "\033[1;90m",  // BLACK
             "\033[1;93m",  // YELLOW

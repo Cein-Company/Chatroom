@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static utils.consts.ConsoleColors.*;
-import static utils.consts.ConsoleColors.RESET;
+import static utils.consts.ConsoleDetail.*;
+import static utils.consts.ConsoleDetail.RESET;
 
 public class ChatClientCLI {
     private static final Map<String, String> users = new HashMap<>();

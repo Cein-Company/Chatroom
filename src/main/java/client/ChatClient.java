@@ -1,13 +1,15 @@
 package client;
 
 import files.ActiveUsersFiles;
+import utils.consts.ConsoleDetail;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
 
-import static utils.consts.ConsoleColors.*;
+import static utils.consts.ConsoleDetail.*;
 
 public class ChatClient {
     private Socket socket;
@@ -42,7 +44,6 @@ public class ChatClient {
 
                 if (scanner.hasNext()) {
                     String messageToSend = scanner.nextLine();
-
                     if (messageToSend != null) {
                         if (messageToSend.equals("/exit")) {
                             clientLeaving();
@@ -52,8 +53,11 @@ public class ChatClient {
                         if (messageToSend.equals("")) {
                             continue;
                         }
-
-                        writeWithBuffered(coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET);
+                        System.out.print(String.format("\033[%dA",1)); // Move up
+                        System.out.print("\033[2K");
+                        messageToSend = getCurrentTime() +" -> " + coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
+                        System.out.println(messageToSend);
+                        writeWithBuffered(messageToSend);
                     }
                 }
             }
@@ -76,7 +80,6 @@ public class ChatClient {
                         if (msgFromGroupChat != null && msgFromGroupChat.length() != 0) {
                             for (int i = 0; i < username.length() + 2; i++)
                                 System.out.print("\b");
-
                             if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
                                 System.out.println(msgFromGroupChat);
 
@@ -87,7 +90,6 @@ public class ChatClient {
 
                                 break;
                             }
-
                             System.out.println(msgFromGroupChat);
                             System.out.print(coloredUsername + colon);
                         }
@@ -136,5 +138,10 @@ public class ChatClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getCurrentTime()
+    {
+        return dateFormat.format(new Date());
     }
 }

@@ -6,8 +6,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static utils.consts.ConsoleColors.RED_BOLD_BRIGHT;
-import static utils.consts.ConsoleColors.RESET;
+import static utils.consts.ConsoleDetail.RED_BOLD_BRIGHT;
+import static utils.consts.ConsoleDetail.RESET;
 
 public class ChatClientHandler implements Runnable {
     public static ArrayList<ChatClientHandler> clients = new ArrayList<>();
