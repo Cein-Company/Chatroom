@@ -15,7 +15,7 @@ import static utils.consts.ConsoleDetail.*;
 import static utils.consts.ConsoleDetail.RESET;
 
 public class ChatClientCLI {
-    private static final Map<String, String> users = new HashMap<>();
+    private static final Map<String, ClientModel> users = new HashMap<>();
     private static final ArrayList<String> activeUsers = new ArrayList<>();
 
     private static void startMenu() {
@@ -79,7 +79,9 @@ public class ChatClientCLI {
                 return;
             }
 
-            users.put(username, password);
+            ClientModel client = new ClientModel(username, password);
+
+            users.put(username, client);
             UsersFiles.writeUsers(users);
 
             startChat(username);
@@ -124,7 +126,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!users.get(username).equals(password)) {
+            if (!users.get(username).getPassword().equals(password)) {
                 System.out.println(RED_BOLD_BRIGHT + "Password incorrect. Try again." + RESET);
                 continue;
             }
@@ -154,7 +156,7 @@ public class ChatClientCLI {
         }
     }
 
-    public static Map<String, String> getUsers() {
+    public static Map<String, ClientModel> getUsers() {
         return users;
     }
 
@@ -173,7 +175,7 @@ public class ChatClientCLI {
     }
 
     public static void main(String[] args) {
-        Map<String, String> temp = UsersFiles.readUsers();
+        Map<String, ClientModel> temp = UsersFiles.readUsers();
         if (temp != null)
             getUsers().putAll(temp);
 
