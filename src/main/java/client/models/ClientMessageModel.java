@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import static utils.ConsoleDetail.*;
 
-public class ClientMessageModel implements Serializable {
-    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
+public class ClientMessageModel<T> implements Serializable {
+//    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
 
     private final String message;
     private final String coloredMessage;
@@ -17,10 +17,10 @@ public class ClientMessageModel implements Serializable {
     private String receiver;
     private final String messageTime;
     private final String messageTimeColored;
-
+    T data;
     private final boolean isCommand;
     private final boolean isExitCommand;
-
+    private ClientMessageMode mode;
     public ClientMessageModel(ClientModel sender, String message) {
         this.message = message;
         this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
@@ -29,6 +29,18 @@ public class ClientMessageModel implements Serializable {
         this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
         this.isCommand = this.message.startsWith("/");
         this.isExitCommand = this.message.equals("/exit");
+        mode = ClientMessageMode.MESSAGE;
+    }
+    public ClientMessageModel(ClientModel sender, String message,T data) {
+        this.message = message;
+        this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
+        this.sender = sender;
+        this.messageTime = getCurrentTime();
+        this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
+        this.isCommand = this.message.startsWith("/");
+        this.isExitCommand = this.message.equals("/exit");
+        this.data = data;
+        mode = ClientMessageMode.SIGN_INTERACT;
     }
 
     public String getFullMessage() {
@@ -72,5 +84,9 @@ public class ClientMessageModel implements Serializable {
 
     private String getCurrentTime() {
         return dateFormat.format(new Date());
+    }
+
+    public ClientMessageMode getMode() {
+        return mode;
     }
 }
