@@ -1,6 +1,7 @@
 package server;
 
 import files.ChatMessagesFiles;
+import server.commandclient.ClientCommandHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -48,6 +49,9 @@ public class ChatClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 
                 if (messageFromClient != null && messageFromClient.length() != 0) {
+                    if (messageFromClient.charAt(messageFromClient.indexOf(":") + 2 ) == '/')
+                        sendMessageToClient(ClientCommandHandler.commandHandler(messageFromClient));
+
                     saveMessages(messageFromClient);
 
                     if (messageFromClient.contains("has left the chatroom"))
@@ -77,6 +81,17 @@ public class ChatClientHandler implements Runnable {
             }
         }
     }
+
+    public void sendMessageToClient(String messageToSend) {
+        try {
+            bufferedWriter.write(messageToSend);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
 
     public void removeClientHandler() {
         clients.remove(this);
