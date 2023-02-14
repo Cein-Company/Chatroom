@@ -1,16 +1,16 @@
 package server;
 
+import client.ClientModel;
 import files.ChatMessagesFiles;
-import server.commandclient.ClientCommandHandler;
+import server.commandclient.CommandHandlerClient;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 
-import static client.ChatClientCLI.getUsers;
-import static utils.consts.ConsoleDetail.*;
+import static client.ChatClientCLI.getUsersFromFile;
+import static utils.ConsoleDetail.RED_BOLD_BRIGHT;
+import static utils.ConsoleDetail.RESET;
 
 public class ChatClientHandler implements Runnable {
     public static ArrayList<ChatClientHandler> clients = new ArrayList<>();
@@ -18,19 +18,23 @@ public class ChatClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String clientUsername;
+    private ClientModel clientModel;
 
     public ChatClientHandler(Socket socket) {
         try {
             this.socket = socket;
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.clientUsername = bufferedReader.readLine();
+
+            String clientColoredUsername = bufferedReader.readLine();
+            for( ClientModel clientModel : getUsersFromFile().values())
+                if (clientModel.getColoredUsername().equals(clientColoredUsername))
+                    this.clientModel = clientModel;
 
             clients.add(this);
 
             String enteredChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
-                    clientUsername + RED_BOLD_BRIGHT + " has entered the chat." + RESET;
+                    clientModel.getColoredUsername() + RED_BOLD_BRIGHT + " has entered the chat." + RESET;
 
             readMessages();
             saveMessages(enteredChatMessage);
@@ -49,10 +53,10 @@ public class ChatClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
-                
+
                 if (messageFromClient != null && messageFromClient.length() != 0) {
                     if (messageFromClient.charAt(messageFromClient.indexOf(": ") + 13) == '/') {
-                        String commandRespond = ClientCommandHandler.commandHandler(messageFromClient);
+                        String commandRespond = CommandHandlerClient.commandHandler(messageFromClient);
 
                         if (commandRespond.contains("SERVER: ")) {
                             sendMessageToClient(commandRespond);
@@ -112,7 +116,7 @@ public class ChatClientHandler implements Runnable {
     public void messagingAClient(String clientUsername, String messageToSend) {
         for (ChatClientHandler client : clients) {
             try {
-                if (client.clientUsername.equals(clientUsername)) {
+                if (client.clientModel.getColoredUsername().equals(clientUsername)) {
                     client.getBufferedWriter().write(messageToSend);
                     client.getBufferedWriter().newLine();
                     client.getBufferedWriter().flush();
@@ -127,8 +131,8 @@ public class ChatClientHandler implements Runnable {
 
     public void removeClientHandler() {
         clients.remove(this);
-//        broadcastMessage(RED_BOLD_BRIGHT + "SERVER: " + RESET +
-//                clientUsername + RED_BOLD_BRIGHT + " has left the chat." + RESET);
+        //        broadcastMessage(RED_BOLD_BRIGHT + "SERVER: " + RESET +
+        //                clientUsername + RED_BOLD_BRIGHT + " has left the chat." + RESET);
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -198,5 +202,9 @@ public class ChatClientHandler implements Runnable {
 
     public BufferedWriter getBufferedWriter() {
         return bufferedWriter;
+    }
+
+    public ClientModel getClientModel() {
+        return clientModel;
     }
 }

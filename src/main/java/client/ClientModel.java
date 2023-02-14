@@ -3,8 +3,8 @@ package client;
 import java.io.Serializable;
 import java.util.Random;
 
-import static utils.consts.ConsoleDetail.BOLD_BRIGHTS_COLORS;
-import static utils.consts.ConsoleDetail.RESET;
+import static utils.ConsoleDetail.BOLD_BRIGHTS_COLORS;
+import static utils.ConsoleDetail.RESET;
 
 public class ClientModel implements Serializable {
     private final String username;

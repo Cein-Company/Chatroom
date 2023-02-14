@@ -1,6 +1,7 @@
 package client;
 
 import files.ActiveUsersFiles;
+import files.BannedUsersFiles;
 import files.UsersFiles;
 
 import java.io.IOException;
@@ -11,12 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static utils.consts.ConsoleDetail.*;
-import static utils.consts.ConsoleDetail.RESET;
+import static utils.ConsoleDetail.*;
+import static utils.ConsoleDetail.RESET;
 
 public class ChatClientCLI {
     private static final Map<String, ClientModel> users = new HashMap<>();
     private static final ArrayList<String> activeUsers = new ArrayList<>();
+    private static final ArrayList<String> bannedUsers = new ArrayList<>();
 
     public static void startMenu() {
         System.out.println(
@@ -66,9 +68,15 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (getUsers().containsKey(username)) {
+            if (getUsersFromFile().containsKey(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "Username taken. Try again." + RESET);
                 continue;
+            }
+
+            if (getBannedUsersFromFile().contains(username)) {
+                System.out.println(RED_BOLD_BRIGHT + "This user was banned from the chatroom." + RESET);
+                startMenu();
+                return;
             }
 
             System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
@@ -81,8 +89,7 @@ public class ChatClientCLI {
 
             ClientModel client = new ClientModel(username, password);
 
-            getUsers().put(username, client);
-            UsersFiles.writeUsers(users);
+            addUsers(username, client);
 
             startChat(username);
 
@@ -103,12 +110,12 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!getUsers().containsKey(username)) {
+            if (!getUsersFromFile().containsKey(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "No such username was found. Try again." + RESET);
                 continue;
             }
 
-            if (getActiveUsers().contains(username)) {
+            if (getActiveUsersFromFile().contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "User is already in the chatroom." + RESET);
                 startMenu();
                 return;
@@ -122,7 +129,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!getUsers().get(username).getPassword().equals(password)) {
+            if (!getUsersFromFile().get(username).getPassword().equals(password)) {
                 System.out.println(RED_BOLD_BRIGHT + "Password incorrect. Try again." + RESET);
                 continue;
             }
@@ -154,6 +161,10 @@ public class ChatClientCLI {
     }
 
     public static Map<String, ClientModel> getUsers() {
+        return users;
+    }
+
+    public static Map<String, ClientModel> getUsersFromFile() {
         Map<String, ClientModel> temp = UsersFiles.readUsers();
         if (temp != null) {
             users.clear();
@@ -164,6 +175,10 @@ public class ChatClientCLI {
     }
 
     public static ArrayList<String> getActiveUsers() {
+        return activeUsers;
+    }
+
+    public static ArrayList<String> getActiveUsersFromFile() {
         ArrayList<String> tempActiveUsers = ActiveUsersFiles.readActiveUsers();
         if (tempActiveUsers != null) {
             activeUsers.clear();
@@ -173,14 +188,48 @@ public class ChatClientCLI {
         return activeUsers;
     }
 
+    public static ArrayList<String> getBannedUsers() {
+        return activeUsers;
+    }
+
+    public static ArrayList<String> getBannedUsersFromFile() {
+        ArrayList<String> tempBannedUsers = BannedUsersFiles.readBannedUsers();
+        if (tempBannedUsers != null) {
+            bannedUsers.clear();
+            bannedUsers.addAll(tempBannedUsers);
+        }
+
+        return bannedUsers;
+    }
+
+    public static void addUsers(String username, ClientModel client) {
+        getUsersFromFile().put(username, client);
+        UsersFiles.writeUsers(users);
+    }
+
+    public static void removeUsers(String username) {
+        getUsersFromFile().remove(username);
+        UsersFiles.writeUsers(users);
+    }
+
     public static void addActiveUsers(String username) {
-        getActiveUsers().add(username);
+        getActiveUsersFromFile().add(username);
         ActiveUsersFiles.writeActiveUsers(activeUsers);
     }
 
     public static void removeActiveUsers(String username) {
-        getActiveUsers().remove(username);
+        getActiveUsersFromFile().remove(username);
         ActiveUsersFiles.writeActiveUsers(activeUsers);
+    }
+
+    public static void addBannedUsers(String username) {
+        getBannedUsersFromFile().add(username);
+        BannedUsersFiles.writeBannedUsers(activeUsers);
+    }
+
+    public static void removeBannedUsers(String username) {
+        getBannedUsersFromFile().remove(username);
+        BannedUsersFiles.writeBannedUsers(bannedUsers);
     }
 
     public static void main(String[] args) {
