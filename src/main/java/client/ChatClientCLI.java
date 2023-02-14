@@ -140,6 +140,7 @@ public class ChatClientCLI {
 
             System.out.println(CYAN_BOLD_BRIGHT +
                     "Login successful. You can start chatting now.\n" +
+                    "To see a list of available commands, use '/help'.\n" +
                     "To exit the chatroom, just write '/exit'.\n" + RESET);
 
             addActiveUsers(username);

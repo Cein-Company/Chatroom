@@ -17,6 +17,7 @@ import java.net.Socket;
 import java.util.*;
 
 import static server.ChatClientHandler.clients;
+import static server.commandserver.ServerCommandHelp.helpCommand;
 import static utils.consts.ConsoleDetail.*;
 
 public class ChatServer {
@@ -34,6 +35,7 @@ public class ChatServer {
         serverOn = true;
 
         System.out.println(RED_BOLD_BRIGHT + "SERVER CONNECTED!\n" +
+                "Type '/help' to see a list of available commands.\n" +
                 "Type '/exit' to close the server." + RESET);
         listenForServerCommands();
 
@@ -292,6 +294,7 @@ public class ChatServer {
                         System.out.println(configCommand(commands));
                     }
                     case  "exit"->closeServerSocket();
+                    case "help"-> System.out.print(helpCommand());
                     default -> System.out.println("Invalid Command");
                 }
             }

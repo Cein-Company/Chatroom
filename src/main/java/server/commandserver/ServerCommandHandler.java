@@ -5,6 +5,7 @@ import server.ChatServer;
 import java.util.Arrays;
 
 import static server.ChatServer.SERVER_COMMANDS;
+import static server.commandserver.ServerCommandHelp.helpCommand;
 
 public class ServerCommandHandler {
     public static String commandHandler(String serverMessage) {
@@ -12,7 +13,7 @@ public class ServerCommandHandler {
 
         switch (commandTokens[0]) {
             case "/help":                                                                                  //     /help
-                // Help
+                return helpCommand();
             case "/commands":
                 return (Arrays.toString(SERVER_COMMANDS));
             case "/log":                                                                                    //     /log

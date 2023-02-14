@@ -8,11 +8,11 @@ import static client.ChatClientCLI.getActiveUsers;
 import static client.ChatClientCLI.getUsers;
 import static utils.consts.ConsoleDetail.*;
 
-public class CommandMessage {
+public class ClientCommandMessage {
     protected static String messageCommand(String clientUsername, String[] commandTokens) {
         if (getActiveUsers().contains(commandTokens[1]) || commandTokens[1].toLowerCase(Locale.ROOT).equals("server")) {
             String target = commandTokens[1].toLowerCase(Locale.ROOT).equals("server") ?
-                    commandTokens[1] : getUsers().get(commandTokens[1]).getColoredUsername();
+                    commandTokens[1].toLowerCase(Locale.ROOT) : getUsers().get(commandTokens[1]).getColoredUsername();
             String messageTime = WHITE_BOLD_BRIGHT + getCurrentTime() + RESET;
             String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
             String announcement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
