@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class ChatMessagesFiles {
-    private static final Path chatMessagesPath = Paths.get(File.separator + "ChatMessages.txt");
+    private static final Path chatMessagesPath = Paths.get("ChatMessages.txt");
 
     public static void writeChatMessages(ArrayList<String> chatMessages) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(chatMessagesPath.toString()))) {

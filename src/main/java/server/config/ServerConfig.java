@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class ServerConfig implements Serializable {
 
+    private String ipAddress;
     private ServerMode mode;
     private boolean showHistory;
     private int port;
@@ -55,6 +56,14 @@ public class ServerConfig implements Serializable {
 
     public void setPass(String pass) {
         this.pass = pass;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     //Chat Condition

@@ -33,7 +33,7 @@ public class ChatClient {
     }
 
     public void sendMessage() {
-        final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
+        final String colon =CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
             writeWithBuffered(coloredUsername);

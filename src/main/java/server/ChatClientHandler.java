@@ -46,7 +46,7 @@ public class ChatClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
-
+                
                 if (messageFromClient != null && messageFromClient.length() != 0) {
                     saveMessages(messageFromClient);
 

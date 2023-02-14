@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class UsersFiles {
-    private static final Path usersPath = Paths.get(File.separator + "Users.txt");
+    private static final Path usersPath = Paths.get("Users.txt");
 
     public static void writeUsers(Map<String, String> users) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(usersPath.toString()))) {
