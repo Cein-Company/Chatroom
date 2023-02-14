@@ -5,6 +5,8 @@ import files.ServerConfigFile;
 import files.UsersFiles;
 import server.config.ServerConfig;
 import server.config.ServerMode;
+import server.features.PollModel;
+import server.features.PollOptionModel;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +15,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static server.ChatClientHandler.clients;
 import static utils.consts.ConsoleDetail.*;
@@ -243,6 +244,40 @@ public class ChatServer {
                         switch (commands[1].replaceFirst("-",""))
                         {
                             case "create"->{
+                                String title = "";
+                                List<PollOptionModel> options = null;
+                                for (int i = 0; i < commands.length; i++) {
+                                    String c = commands[i];
+                                    if (c.charAt(0) == '-') {
+                                        if (c.equals("-t")) {
+                                            if(commands[i+1].charAt(0)=='-')
+                                                continue;
+                                            title = "";
+                                            for (int j = i+1;j<commands.length; j++) {
+                                                if(commands[j].charAt(0)=='-')
+                                                    break;
+                                                title+= commands[j]+" ";
+                                            }
+                                        } else if (c.equals("-o")) {
+                                            options = new ArrayList<>();
+                                            for (int j = i+1;j<commands.length; j++) {
+                                                if(commands[j].charAt(0)=='-')
+                                                    break;
+                                                options.add(PollOptionModel.factory(commands[j]));
+                                            }
+                                        }
+                                    }
+                                }
+                                if(title == null ) {
+                                    System.out.println(RED+"Title can't be empty"+RESET);
+                                    return;
+                                }
+                                if(options == null) {
+                                    System.out.println(RED+"Options can't be empty"+RESET);
+                                    return;
+                                }
+                                PollModel poll = new PollModel(title,options);
+                                System.out.println(poll.show());
 
                             }
                             case "result"->{}
