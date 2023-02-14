@@ -130,7 +130,7 @@ public class ChatClient {
         }).start();
     }
 
-    public void clientLeaving() {
+    public void clientLeaving() throws IOException {
         closeEverything();
 
         System.out.println("""
@@ -147,8 +147,7 @@ public class ChatClient {
 
             switch (choice) {
                 case "1":
-                    ChatClientCLI.startMenu();
-                    break label;
+                    return;
                 case "2":
                     System.out.print(RED_BOLD_BRIGHT + "\nGoodbye." + RESET);
                     break label;
@@ -173,7 +172,6 @@ public class ChatClient {
         try {
             if (socket != null)
                 socket.close();
-
             if (objectOutputStream != null)
                 objectOutputStream.close();
 

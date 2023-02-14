@@ -24,7 +24,6 @@ public class ClientModel implements Serializable {
         this.coloredUsername = CLIENT_COLOR + this.username + RESET;
         this.banned = false;
     }
-
     public String getUsername() {
         return username;
     }
@@ -48,5 +47,8 @@ public class ClientModel implements Serializable {
     public static ClientModel factory(String username , String password )
     {
         return new ClientModel(username,password,null);
+    }
+    public UUID getClientId() {
+        return clientId;
     }
 }

@@ -15,11 +15,12 @@ import utils.JsonRequestResponse;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.UUID;
 
-import static utils.ConsoleDetail.CYAN_BOLD_BRIGHT;
-import static utils.ConsoleDetail.RESET;
+import static utils.ConsoleDetail.*;
 
 public class SignInteractHandler {
 
@@ -32,18 +33,13 @@ public class SignInteractHandler {
     private JsonRequestResponse listener;
     private boolean isServerOn;
     private boolean isKicked;
-    private String currentOperation;
 
-    public SignInteractHandler(Socket socket, ObjectInputStream inputStream, ObjectOutputStream outputStream) {
-        this.socket = socket;
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
-        isServerOn = true;
-        listenForMessage();
+    public SignInteractHandler() {
+        setUpSocket();
+
     }
 
     public void listenForMessage() {
-        final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         new Thread(() -> {
             ServerMessageModel response;
@@ -103,19 +99,39 @@ public class SignInteractHandler {
 
     public void closeEverything() {
         try {
-            if (socket != null)
-                socket.close();
+            isServerOn = false;
 
             if (outputStream != null)
                 outputStream.close();
 
             if (inputStream != null)
                 inputStream.close();
+            if (socket != null)
+                socket.close();
 
-            if (!isServerOn || isKicked)
-                System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setUpSocket() {
+        try {
+            this.socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
+            this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+            this.inputStream = new ObjectInputStream(socket.getInputStream());
+            outputStream.writeObject("SIGN_INTERACT");
+            outputStream.flush();
+            isServerOn = true;
+            listenForMessage();
+        } catch (IOException e) {
+            System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
+            System.out.println("try again ?(Y/n)");
+            switch (new Scanner(System.in).nextLine().trim().toLowerCase()) {
+                case "y":
+                    setUpSocket();
+                default:
+                    return;
+            }
         }
     }
 
@@ -124,18 +140,22 @@ public class SignInteractHandler {
         ClientMessageModel request = new ClientMessageModel<ClientModel>(null, SIGN_UP, newClient);
         if (isServerOn && socket.isConnected())
             sendRequest(request);
+        else {
+            setUpSocket();
+        }
         listener = new JsonRequestResponse() {
             @Override
             public void result(JSONObject response) {
                 // condition : SUCCESSFULL,ERROR,TAKEN,
                 try {
                     boolean condition = response.getBoolean("condition");
-                    String error = response.getString("error");
-                    JSONObject clientModel = response.getJSONObject("model");
+                    String error = response.getString("content");
+                    JSONObject clientModel = response.getJSONObject("client");
                     ClientModel client = new ClientModel(clientModel.getString("username"),
                             clientModel.getString("password"),
                             UUID.fromString(clientModel.getString("id")));
-                    result.result(condition,error,client);
+                    result.result(condition, error, client);
+                    closeEverything();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -144,22 +164,28 @@ public class SignInteractHandler {
         };
     }
 
-    public void login(InteractiveInterface<ClientModel> result,String username, String password) {
-        ClientMessageModel request = new ClientMessageModel<ClientModel>(null, LOGIN, ClientModel.factory(username,password));
+    public void login(InteractiveInterface<ClientModel> result, String username, String password) {
+        ClientMessageModel request = new ClientMessageModel<ClientModel>(null, LOGIN, ClientModel.factory(username, password));
         if (isServerOn && socket.isConnected())
             sendRequest(request);
+        else
+            setUpSocket();
         listener = new JsonRequestResponse() {
             @Override
             public void result(JSONObject response) {
                 // condition : SUCCESS,ERROR,TAKEN,
                 try {
                     boolean condition = response.getBoolean("condition");
-                    String error = response.getString("error");
-                    JSONObject clientModel = response.getJSONObject("model");
-                    ClientModel client = new ClientModel(clientModel.getString("username"),
-                            clientModel.getString("password"),
-                            UUID.fromString(clientModel.getString("id")));
-                    result.result(condition,error,client);
+                    String content = response.getString("content");
+                    ClientModel client = null;
+                    if (condition) {
+                        JSONObject clientModel = response.getJSONObject("client");
+                        client = new ClientModel(clientModel.getString("username"),
+                                clientModel.getString("password"),
+                                UUID.fromString(clientModel.getString("id")));
+                    }
+                    result.result(condition, content, client);
+                    closeEverything();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -167,7 +193,7 @@ public class SignInteractHandler {
             }
         };
     }
-    
+
     private void sendRequest(ClientMessageModel request) {
         try {
             outputStream.writeObject(request);

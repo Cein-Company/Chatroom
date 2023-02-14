@@ -89,4 +89,8 @@ public class ClientMessageModel<T> implements Serializable {
     public ClientMessageMode getMode() {
         return mode;
     }
+
+    public T getData() {
+        return data;
+    }
 }

@@ -23,8 +23,8 @@ public class ChatServer {
     private static ServerSocket serverSocket;
     private static boolean serverOn = false;
 
-    private static int MAX_PORTS_RANGE = 65536;
-    private static int MIN_PORTS_RANGE = 0;
+    private static final int MAX_PORTS_RANGE = 65536;
+    private static final int MIN_PORTS_RANGE = 0;
 
     public static void startServer() {
         serverOn = true;
@@ -39,8 +39,8 @@ public class ChatServer {
 
         try {
             while (isServerOn() && !serverSocket.isClosed()) {
-                Socket socket = serverSocket.accept();
-                System.out.println(CYAN_BOLD_BRIGHT + "NEW USER CONNECTED!" + RESET);
+                Socket socket = serverSocket.accept();//established
+                System.out.println(CYAN_BOLD_BRIGHT + "NEW CONNECTION ESTABLISHED !" + RESET);
                 ChatClientHandler client = new ChatClientHandler(socket);
                 Thread thread = new Thread(client);
                 thread.start();
