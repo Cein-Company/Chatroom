@@ -147,6 +147,11 @@ public class ChatClient {
 
             switch (choice) {
                 case "1":
+                    try {
+                        ChatClientCLI.startMenu();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     return;
                 case "2":
                     System.out.print(RED_BOLD_BRIGHT + "\nGoodbye." + RESET);

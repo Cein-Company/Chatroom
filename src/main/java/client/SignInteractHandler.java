@@ -40,7 +40,6 @@ public class SignInteractHandler {
     }
 
     public void listenForMessage() {
-
         new Thread(() -> {
             ServerMessageModel response;
 

@@ -3,6 +3,7 @@ package server;
 import client.models.ClientMessageMode;
 import client.models.ClientMessageModel;
 import client.models.ClientModel;
+import files.MyActiveUsersFiles;
 import files.MyMessagesFiles;
 import files.MyUsersFiles;
 import org.json.JSONException;
@@ -127,6 +128,7 @@ public class ChatClientHandler implements Runnable {
                         clientJO.put("id", clientModel.getClientId().toString());
                     response.put("content", "Operation is successfully end!!");
                     response.put("client", clientJO);
+                    MyActiveUsersFiles.save(clientModel.getUsername());
                 } catch (Exception e) {
                     response.put("condition", false);
                     response.put("content", e.toString());
