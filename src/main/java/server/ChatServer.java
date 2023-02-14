@@ -1,5 +1,9 @@
 package server;
 
+import files.ServerConfigFile;
+import server.config.ServerConfig;
+import server.config.ServerMode;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,8 +13,9 @@ import static server.ChatClientHandler.clients;
 import static utils.consts.ConsoleDetail.*;
 
 public class ChatServer {
-    private static final ArrayList<String> chatMessages = new ArrayList<>();
 
+    private static final ArrayList<String> chatMessages = new ArrayList<>();
+    private static ServerConfig config;
     private static ServerSocket serverSocket;
     private static boolean serverOn = false;
 
@@ -73,9 +78,18 @@ public class ChatServer {
         return chatMessages;
     }
 
+    private static void configServer() {
+        config = new ServerConfig(ServerMode.OPEN, true, 4444, "");
+        ServerConfigFile.writeConfig(config);
+    }
+
     public static void main(String[] args) {
         try {
-            serverSocket = new ServerSocket(4444);
+            config = ServerConfig.factory();
+            if(config == null)
+                configServer();
+
+            serverSocket = new ServerSocket(config.getPort());
             startServer();
         } catch (IOException e) {
             System.err.println(RED_BOLD_BRIGHT + "Could not listen to port." + RESET);
