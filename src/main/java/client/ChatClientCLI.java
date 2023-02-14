@@ -66,7 +66,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (users.containsKey(username)) {
+            if (getUsers().containsKey(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "Username taken. Try again." + RESET);
                 continue;
             }
@@ -81,7 +81,7 @@ public class ChatClientCLI {
 
             ClientModel client = new ClientModel(username, password);
 
-            users.put(username, client);
+            getUsers().put(username, client);
             UsersFiles.writeUsers(users);
 
             startChat(username);
@@ -91,10 +91,6 @@ public class ChatClientCLI {
     }
 
     private static void login() {
-        ArrayList<String> tempActiveUsers = ActiveUsersFiles.readActiveUsers();
-        if (tempActiveUsers != null)
-            activeUsers.addAll(tempActiveUsers);
-
         String username;
         String password;
 
@@ -107,12 +103,12 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!users.containsKey(username)) {
+            if (!getUsers().containsKey(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "No such username was found. Try again." + RESET);
                 continue;
             }
 
-            if (activeUsers.contains(username)) {
+            if (getActiveUsers().contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "User is already in the chatroom." + RESET);
                 startMenu();
                 return;
@@ -126,7 +122,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!users.get(username).getPassword().equals(password)) {
+            if (!getUsers().get(username).getPassword().equals(password)) {
                 System.out.println(RED_BOLD_BRIGHT + "Password incorrect. Try again." + RESET);
                 continue;
             }
@@ -157,28 +153,36 @@ public class ChatClientCLI {
     }
 
     public static Map<String, ClientModel> getUsers() {
+        Map<String, ClientModel> temp = UsersFiles.readUsers();
+        if (temp != null) {
+            users.clear();
+            users.putAll(temp);
+        }
+
         return users;
     }
 
     public static ArrayList<String> getActiveUsers() {
+        ArrayList<String> tempActiveUsers = ActiveUsersFiles.readActiveUsers();
+        if (tempActiveUsers != null) {
+            activeUsers.clear();
+            activeUsers.addAll(tempActiveUsers);
+        }
+
         return activeUsers;
     }
 
     public static void addActiveUsers(String username) {
-        activeUsers.add(username);
+        getActiveUsers().add(username);
         ActiveUsersFiles.writeActiveUsers(activeUsers);
     }
 
     public static void removeActiveUsers(String username) {
-        activeUsers.remove(username);
-        ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
+        getActiveUsers().remove(username);
+        ActiveUsersFiles.writeActiveUsers(activeUsers);
     }
 
     public static void main(String[] args) {
-        Map<String, ClientModel> temp = UsersFiles.readUsers();
-        if (temp != null)
-            getUsers().putAll(temp);
-
         startMenu();
     }
 }

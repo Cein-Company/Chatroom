@@ -29,7 +29,7 @@ public class ChatClient {
     }
 
     public void sendMessage() {
-        final String colon =CYAN_BOLD_BRIGHT + ": " + RESET;
+        final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
             writeWithBuffered(client.getColoredUsername());
@@ -49,9 +49,13 @@ public class ChatClient {
                         if (messageToSend.equals("")) {
                             continue;
                         }
-                        System.out.print(String.format("\033[%dA",1)); // Move up
+                        System.out.print(String.format("\033[%dA", 1)); // Move up
                         System.out.print("\033[2K");
-                        messageToSend = getCurrentTime() +" -> " + client.getColoredUsername() + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
+
+                        String messageTime = WHITE_BOLD_BRIGHT + getCurrentTime() + RESET;
+                        String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
+                        messageToSend =
+                                messageTime + indicator + client.getColoredUsername() + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
                         System.out.println(messageToSend);
                         writeWithBuffered(messageToSend);
                     }
@@ -163,8 +167,7 @@ public class ChatClient {
         }
     }
 
-    private String getCurrentTime()
-    {
+    private String getCurrentTime() {
         return dateFormat.format(new Date());
     }
 }

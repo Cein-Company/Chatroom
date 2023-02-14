@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class UsersFiles {
-    private static final Path usersPath = Paths.get("Users.txt");
+    private static final Path usersPath = Paths.get("D:\\" + "Users.txt");
 
     public static void writeUsers(Map<String, ClientModel> users) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(usersPath.toString()))) {

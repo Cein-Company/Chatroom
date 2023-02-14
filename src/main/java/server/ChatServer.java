@@ -26,7 +26,7 @@ public class ChatServer {
     private static ServerSocket serverSocket;
     private static boolean serverOn = false;
 
-    private static final String[] SERVER_COMMANDS = new String[]{"exit","log -> {log , log -save {path}}","members","kick","ban","mode"};
+    public static final String[] SERVER_COMMANDS = new String[]{"exit","log -> {log , log -save {path}}","members","kick","ban","mode"};
     private static int MAX_PORTS_RANGE = 65536;
     private static int MIN_PORTS_RANGE = 0;
 

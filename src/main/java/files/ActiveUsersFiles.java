@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 
 public class ActiveUsersFiles {
-    private static final Path activeUsersPath = Paths.get( "ActiveUsers.txt");
+    private static final Path activeUsersPath = Paths.get( "D:\\" + "ActiveUsers.txt");
 
     public static void writeActiveUsers(ArrayList<String> activeUsers) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(activeUsersPath.toString()))) {

@@ -6,9 +6,11 @@ import server.commandclient.ClientCommandHandler;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 
-import static utils.consts.ConsoleDetail.RED_BOLD_BRIGHT;
-import static utils.consts.ConsoleDetail.RESET;
+import static client.ChatClientCLI.getUsers;
+import static utils.consts.ConsoleDetail.*;
 
 public class ChatClientHandler implements Runnable {
     public static ArrayList<ChatClientHandler> clients = new ArrayList<>();
@@ -49,16 +51,31 @@ public class ChatClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 
                 if (messageFromClient != null && messageFromClient.length() != 0) {
-                    if (messageFromClient.charAt(messageFromClient.indexOf(":") + 2 ) == '/')
-                        sendMessageToClient(ClientCommandHandler.commandHandler(messageFromClient));
+                    if (messageFromClient.charAt(messageFromClient.indexOf(": ") + 13) == '/') {
+                        String commandRespond = ClientCommandHandler.commandHandler(messageFromClient);
 
-                    saveMessages(messageFromClient);
+                        if (commandRespond.contains("SERVER: ")) {
+                            sendMessageToClient(commandRespond);
+                        } else {
+                            String[] arr = commandRespond.split(" ", 2);
 
-                    if (messageFromClient.contains("has left the chatroom"))
-                        closeEverything(socket, bufferedReader, bufferedWriter);
+                            String target = arr[0];
+                            String messageToBeSent = arr[1];
 
-                    System.out.println(messageFromClient);
-                    broadcastMessage(messageFromClient);
+                            if (target.equals("server"))
+                                System.out.println(messageToBeSent);
+                            else
+                                messagingAClient(target, messageToBeSent);
+                        }
+                    } else {
+                        saveMessages(messageFromClient);
+
+                        if (messageFromClient.contains("has left the chatroom"))
+                            closeEverything(socket, bufferedReader, bufferedWriter);
+
+                        System.out.println(messageFromClient);
+                        broadcastMessage(messageFromClient);
+                    }
                 }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -92,6 +109,21 @@ public class ChatClientHandler implements Runnable {
         }
     }
 
+    public void messagingAClient(String clientUsername, String messageToSend) {
+        for (ChatClientHandler client : clients) {
+            try {
+                if (client.clientUsername.equals(clientUsername)) {
+                    client.getBufferedWriter().write(messageToSend);
+                    client.getBufferedWriter().newLine();
+                    client.getBufferedWriter().flush();
+                    break;
+                }
+            } catch (IOException e) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
+                break;
+            }
+        }
+    }
 
     public void removeClientHandler() {
         clients.remove(this);
@@ -129,7 +161,7 @@ public class ChatClientHandler implements Runnable {
     public void saveMessages(String messageToSave) {
         ArrayList<String> tempMessages = ChatMessagesFiles.readChatMessages();
         if (tempMessages != null) {
-            ChatServer.getChatMessages().removeAll(ChatServer.getChatMessages());
+            ChatServer.getChatMessages().clear();
             ChatServer.getChatMessages().addAll(tempMessages);
         }
 
@@ -140,7 +172,7 @@ public class ChatClientHandler implements Runnable {
     public void readMessages() {
         ArrayList<String> tempMessages = ChatMessagesFiles.readChatMessages();
         if (tempMessages != null) {
-            ChatServer.getChatMessages().removeAll(ChatServer.getChatMessages());
+            ChatServer.getChatMessages().clear();
             ChatServer.getChatMessages().addAll(tempMessages);
         }
 
