@@ -1,32 +1,26 @@
 package client;
 
-import files.ActiveUsersFiles;
-import files.UsersFiles;
+import client.models.ClientModel;
+import files.MyActiveUsersFiles;
+import files.MyUsersFiles;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
-import static utils.consts.ConsoleDetail.*;
-import static utils.consts.ConsoleDetail.RESET;
+import static utils.ConsoleDetail.*;
 
 public class ChatClientCLI {
-    private static final Map<String, ClientModel> users = new HashMap<>();
-    private static final ArrayList<String> activeUsers = new ArrayList<>();
-
     public static void startMenu() {
         System.out.println(
                 """
-                \033[1;97mWelcome to our local chatroom.
-                                
-                1. Sign up
-                2. Login
-                3. Exit
-                \033[0m""");
+                        \033[1;97mWelcome to our local chatroom.
+                                        
+                        1. Sign up
+                        2. Login
+                        3. Exit
+                        \033[0m""");
 
         label:
         while (true) {
@@ -66,7 +60,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (getUsers().containsKey(username)) {
+            if (MyUsersFiles.contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "Username taken. Try again." + RESET);
                 continue;
             }
@@ -79,10 +73,8 @@ public class ChatClientCLI {
                 return;
             }
 
-            ClientModel client = new ClientModel(username, password);
-
-            getUsers().put(username, client);
-            UsersFiles.writeUsers(users);
+            ClientModel newClient = new ClientModel(username, password);
+            MyUsersFiles.save(newClient);
 
             startChat(username);
 
@@ -103,12 +95,16 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!getUsers().containsKey(username)) {
+            if (!MyUsersFiles.contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "No such username was found. Try again." + RESET);
                 continue;
+            } else if (MyUsersFiles.getUserByName(username).isBanned()) {
+                    System.out.println(RED_BOLD_BRIGHT + "This user was banned from the chatroom." + RESET);
+                    startMenu();
+                    return;
             }
 
-            if (getActiveUsers().contains(username)) {
+            if (MyActiveUsersFiles.contains(username)) {
                 System.out.println(RED_BOLD_BRIGHT + "User is already in the chatroom." + RESET);
                 startMenu();
                 return;
@@ -122,7 +118,7 @@ public class ChatClientCLI {
                 return;
             }
 
-            if (!getUsers().get(username).getPassword().equals(password)) {
+            if (!MyUsersFiles.getUserByName(username).getPassword().equals(password)) {
                 System.out.println(RED_BOLD_BRIGHT + "Password incorrect. Try again." + RESET);
                 continue;
             }
@@ -136,14 +132,14 @@ public class ChatClientCLI {
     private static void startChat(String username) {
         try {
             Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
-            ChatClient client = new ChatClient(socket, users.get(username));
+            ChatClient client = new ChatClient(socket, MyUsersFiles.getUserByName(username));
 
             System.out.println(CYAN_BOLD_BRIGHT +
                     "Login successful. You can start chatting now.\n" +
                     "To see a list of available commands, use '/help'.\n" +
                     "To exit the chatroom, just write '/exit'.\n" + RESET);
 
-            addActiveUsers(username);
+            MyActiveUsersFiles.save(username);
 
             client.listenForMessage();
             client.sendMessage();
@@ -151,36 +147,6 @@ public class ChatClientCLI {
             System.out.println(RED_BOLD_BRIGHT + "NO SERVER WAS FOUND" + RESET);
             e.printStackTrace();
         }
-    }
-
-    public static Map<String, ClientModel> getUsers() {
-        Map<String, ClientModel> temp = UsersFiles.readUsers();
-        if (temp != null) {
-            users.clear();
-            users.putAll(temp);
-        }
-
-        return users;
-    }
-
-    public static ArrayList<String> getActiveUsers() {
-        ArrayList<String> tempActiveUsers = ActiveUsersFiles.readActiveUsers();
-        if (tempActiveUsers != null) {
-            activeUsers.clear();
-            activeUsers.addAll(tempActiveUsers);
-        }
-
-        return activeUsers;
-    }
-
-    public static void addActiveUsers(String username) {
-        getActiveUsers().add(username);
-        ActiveUsersFiles.writeActiveUsers(activeUsers);
-    }
-
-    public static void removeActiveUsers(String username) {
-        getActiveUsers().remove(username);
-        ActiveUsersFiles.writeActiveUsers(activeUsers);
     }
 
     public static void main(String[] args) {

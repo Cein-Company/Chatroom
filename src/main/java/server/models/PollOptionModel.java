@@ -1,4 +1,4 @@
-package server.features;
+package server.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,7 @@ public class PollOptionModel {
         this.content = content;
     }
 
-    public static PollOptionModel factory(String content)
-    {
+    public static PollOptionModel factory(String content) {
         return new PollOptionModel(content);
     }
 

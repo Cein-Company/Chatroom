@@ -1,30 +1,47 @@
 package client;
 
-import files.ActiveUsersFiles;
-import utils.consts.ConsoleDetail;
+import client.models.ClientMessageModel;
+import client.models.ClientModel;
+import files.MyActiveUsersFiles;
+import server.models.ServerMessageMode;
+import server.models.ServerMessageModel;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Date;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
-import static utils.consts.ConsoleDetail.*;
+import static utils.ConsoleDetail.*;
 
 public class ChatClient {
+    private static ArrayList<ChatClient> chatClients = new ArrayList<>();
+
     private Socket socket;
     private ClientModel client;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
+
+    private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
+
+    private boolean isServerOn;
+    private boolean isKicked;
 
     public ChatClient(Socket socket, ClientModel client) {
         try {
             this.socket = socket;
             this.client = client;
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            this.objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+            this.isServerOn = true;
+            this.isKicked = false;
+
+            chatClients.add(this);
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything();
         }
     }
 
@@ -32,37 +49,38 @@ public class ChatClient {
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
-            writeWithBuffered(client.getColoredUsername());
+            objectOutputStream.writeObject(client);
+            objectOutputStream.flush();
 
             Scanner scanner = new Scanner(System.in);
-            while (socket.isConnected()) {
+            while (isServerOn && socket.isConnected()) {
+                if (!isServerOn)
+                    break;
+
                 System.out.print(client.getColoredUsername() + colon);
 
-                if (scanner.hasNext()) {
+                if (isServerOn && scanner.hasNext()) {
                     String messageToSend = scanner.nextLine();
+
                     if (messageToSend != null) {
-                        if (messageToSend.equals("/exit")) {
+                        if (messageToSend.equals(""))
+                            continue;
+
+                        ClientMessageModel message = new ClientMessageModel(client, messageToSend);
+
+                        System.out.println(message.getFullMessage());
+                        writeWithObjectOutput(message);
+
+                        if (message.getMessage().toLowerCase(Locale.ROOT).equals("/exit")) {
                             clientLeaving();
                             break;
                         }
-
-                        if (messageToSend.equals("")) {
-                            continue;
-                        }
-                        System.out.print(String.format("\033[%dA", 1)); // Move up
-                        System.out.print("\033[2K");
-
-                        String messageTime = WHITE_BOLD_BRIGHT + getCurrentTime() + RESET;
-                        String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
-                        messageToSend =
-                                messageTime + indicator + client.getColoredUsername() + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
-                        System.out.println(messageToSend);
-                        writeWithBuffered(messageToSend);
                     }
                 }
             }
         } catch (IOException e) {
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            if (isServerOn)
+                closeEverything();
         }
     }
 
@@ -70,104 +88,110 @@ public class ChatClient {
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         new Thread(() -> {
-            String msgFromGroupChat;
+            ServerMessageModel messageFromChat;
 
-            while (socket.isConnected()) {
+            while (isServerOn && socket.isConnected()) {
                 try {
-                    if (bufferedReader.ready()) {
-                        msgFromGroupChat = bufferedReader.readLine();
+                    if (isServerOn) {
+                        messageFromChat = (ServerMessageModel) objectInputStream.readObject();
 
-                        if (msgFromGroupChat != null && msgFromGroupChat.length() != 0) {
+                        if (messageFromChat != null) {
                             for (int i = 0; i < client.getUsername().length() + 2; i++)
                                 System.out.print("\b");
-                            if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
-                                System.out.println(msgFromGroupChat);
 
-                                ChatClientCLI.getActiveUsers().remove(client.getUsername());
-                                ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
+                            if (messageFromChat.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
+                                isServerOn = false;
+                                System.out.println(messageFromChat.getFullMessage());
 
-                                closeEverything(socket, bufferedReader, bufferedWriter);
-
+                                closeEverything();
                                 break;
                             }
-                            System.out.println(msgFromGroupChat);
+
+                            if (messageFromChat.getMessageMode().equals(ServerMessageMode.ServerKickMsg)) {
+                                isKicked = true;
+
+                                System.out.println(messageFromChat.getFullMessage());
+                                closeEverything();
+                                break;
+                            }
+
+                            System.out.println(messageFromChat.getFullMessage());
                             System.out.print(client.getColoredUsername() + colon);
                         }
                     }
                 } catch (IOException e) {
-                    closeEverything(socket, bufferedReader, bufferedWriter);
+                    if (isServerOn)
+                        closeEverything();
                     break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
     }
 
     public void clientLeaving() {
-        try {
-            String leftChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
-                    client.getColoredUsername() + RED_BOLD_BRIGHT + " has left the chatroom." + RESET;
+        closeEverything();
 
-            writeWithBuffered(leftChatMessage);
+        System.out.println("""
+                \033[1;97m
+                1. Return to main menu
+                2. Exit
+                \033[0m""");
 
-            System.out.println(RED_BOLD_BRIGHT + "You have left the chatroom. Goodbye." + RESET);
+        label:
+        while (true) {
+            System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
 
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            String choice = new Scanner(System.in).nextLine();
 
-            System.out.println("""
-                    \033[1;97m
-                    1. Return to main menu
-                    2. Exit
-                    \033[0m""");
-
-            label:
-            while (true) {
-                System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
-
-                String choice = new Scanner(System.in).nextLine();
-
-                switch (choice) {
-                    case "1":
-                        ChatClientCLI.startMenu();
-                        break label;
-                    case "2":
-                        System.out.print(RED_BOLD_BRIGHT + "\nGoodbye." + RESET);
-                        break label;
-                    case "":
-                        continue;
-                    default:
-                        System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
-                        break;
-                }
+            switch (choice) {
+                case "1":
+                    ChatClientCLI.startMenu();
+                    break label;
+                case "2":
+                    System.out.print(RED_BOLD_BRIGHT + "\nGoodbye." + RESET);
+                    break label;
+                case "":
+                    continue;
+                default:
+                    System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
+                    break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    private void writeWithBuffered(String text) throws IOException {
-        bufferedWriter.write(text);
-        bufferedWriter.newLine();
-        bufferedWriter.flush();
+    private void writeWithObjectOutput(ClientMessageModel clientMessage) throws IOException {
+        objectOutputStream.writeObject(clientMessage);
+        objectOutputStream.flush();
     }
 
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        ChatClientCLI.removeActiveUsers(client.getUsername());
+    public void closeEverything() {
+        MyActiveUsersFiles.remove(client.getUsername());
+        chatClients.remove(this);
 
         try {
             if (socket != null)
                 socket.close();
 
-            if (bufferedWriter != null)
-                bufferedWriter.close();
+            if (objectOutputStream != null)
+                objectOutputStream.close();
 
-            if (bufferedReader != null)
-                bufferedReader.close();
+            if (objectInputStream != null)
+                objectInputStream.close();
+
+            if (!isServerOn || isKicked)
+                System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String getCurrentTime() {
-        return dateFormat.format(new Date());
+    public ClientModel getClient() {
+        return client;
+    }
+
+    public static ArrayList<ChatClient> getChatClients() {
+        return chatClients;
     }
 }

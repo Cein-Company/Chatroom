@@ -1,6 +1,6 @@
 package server.config;
 
-import files.ServerConfigFile;
+import files.MyServerConfigFile;
 
 import java.io.Serializable;
 
@@ -23,7 +23,7 @@ public class ServerConfig implements Serializable {
     }
 
     public static ServerConfig factory() {
-        return ServerConfigFile.readServerConfig();
+        return MyServerConfigFile.readServerConfig();
     }
 
     public ServerMode getMode() {

@@ -1,35 +1,35 @@
 package server.commandclient;
 
+import client.models.ClientMessageModel;
+import client.models.ClientModel;
+import files.MyActiveUsersFiles;
+import files.MyUsersFiles;
+import server.models.ServerMessageMode;
+import server.models.ServerMessageModel;
+
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Locale;
 
-import static client.ChatClientCLI.getActiveUsers;
-import static client.ChatClientCLI.getUsers;
-import static utils.consts.ConsoleDetail.*;
-
 public class ClientCommandMessage {
-    protected static String messageCommand(String clientUsername, String[] commandTokens) {
-        if (getActiveUsers().contains(commandTokens[1]) || commandTokens[1].toLowerCase(Locale.ROOT).equals("server")) {
-            String target = commandTokens[1].toLowerCase(Locale.ROOT).equals("server") ?
-                    commandTokens[1].toLowerCase(Locale.ROOT) : getUsers().get(commandTokens[1]).getColoredUsername();
-            String messageTime = WHITE_BOLD_BRIGHT + getCurrentTime() + RESET;
-            String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
-            String announcement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
-            String senderColoredUsername = getUsers().get(clientUsername).getColoredUsername();
-            String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
-            String message = WHITE_BOLD_BRIGHT + join(commandTokens, commandTokens[2]) + RESET;
+    protected static ServerMessageModel messageCommand(ClientMessageModel clientMessage, String[] commandTokens) {
+        String receiver = commandTokens[1];
 
-            String toBeSentMessage = messageTime + indicator + announcement + senderColoredUsername + colon + message;
+        if (commandTokens.length >= 3 && commandTokens[2].startsWith("'") && commandTokens[commandTokens.length - 1].endsWith("'")) {
+            if (MyActiveUsersFiles.contains(receiver) || receiver.toLowerCase(Locale.ROOT).equals("server")) {
+                String message = join(commandTokens, commandTokens[2]);
 
-            return target + " " + toBeSentMessage;
-        } else if (getUsers().containsKey(commandTokens[1])) {
-            String target = getUsers().get(commandTokens[1]).getColoredUsername();
+                if (!receiver.toLowerCase(Locale.ROOT).equals("server") &&
+                        MyUsersFiles.getUserByName(receiver).getUsername().equals(clientMessage.getSender().getUsername()))
+                    return getCantPMYourselfMsg();
 
-            return RED_BOLD_BRIGHT + "SERVER: " + RESET + target + RED_BOLD_BRIGHT + " is not online at the moment." + RESET;
-        } else {
-            return RED_BOLD_BRIGHT + "SERVER: No such user was found in the server." + RESET;
-        }
+                return receiver.toLowerCase(Locale.ROOT).equals("server") ?
+                        getPMToServer(clientMessage, message) : getPMToClient(clientMessage, receiver, message);
+            } else if (MyUsersFiles.contains(receiver))
+                return getNotOnlineMsg(MyUsersFiles.getUserByName(receiver));
+            else
+                return getUserNotFoundMsg();
+        } else
+            return getInvalidMessageCommand();
     }
 
     private static String join(String[] tokens, String from) {
@@ -41,7 +41,27 @@ public class ClientCommandMessage {
                         tokens.length));
     }
 
-    private static String getCurrentTime() {
-        return dateFormat.format(new Date());
+    private static ServerMessageModel getPMToServer(ClientMessageModel clientMessage, String message) {
+        return new ServerMessageModel(ServerMessageMode.PMFromClientToServer, clientMessage, message);
+    }
+
+    private static ServerMessageModel getPMToClient(ClientMessageModel clientMessage, String receiver, String message) {
+        return new ServerMessageModel(ServerMessageMode.PMFromClientToClient, clientMessage, MyUsersFiles.getUserByName(receiver), message);
+    }
+
+    private static ServerMessageModel getNotOnlineMsg(ClientModel clientAbout) {
+        return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, clientAbout, "User is not online at the moment.");
+    }
+
+    private static ServerMessageModel getCantPMYourselfMsg() {
+        return new ServerMessageModel(ServerMessageMode.FromSerer, "You can't send a private message to yourself.");
+    }
+
+    private static ServerMessageModel getUserNotFoundMsg() {
+        return new ServerMessageModel(ServerMessageMode.FromSerer, "No such user was found in the server.");
+    }
+
+    private static ServerMessageModel getInvalidMessageCommand() {
+        return new ServerMessageModel(ServerMessageMode.FromSerer, "Please Use the /message command correctly.");
     }
 }
