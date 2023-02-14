@@ -11,7 +11,8 @@ public class PollOptionModel {
         this.content = content;
     }
 
-    public static PollOptionModel factory(String content) {
+    public static PollOptionModel factory(String content)
+    {
         return new PollOptionModel(content);
     }
 

@@ -9,12 +9,12 @@ public class PollModel {
     private final int code;
     private String title;
     private List<PollOptionModel> options;
-    private Map<ClientModel, Integer> answers;
+    private Map<ClientModel,Integer> answers;
 
     public PollModel(String title, List<PollOptionModel> options) {
         this.title = title;
         this.options = options;
-        code = new Random().nextInt(10000, 1000000);
+        code = new Random().nextInt(10000,1000000);
     }
 
     public int getCode() {
@@ -37,28 +37,28 @@ public class PollModel {
         this.options = options;
     }
 
-    public void addOption(PollOptionModel option) {
-        if (options == null)
+    public void addOption(PollOptionModel option)
+    {
+        if(options == null)
             options = new ArrayList<>();
         this.options.add(option);
     }
-
-    public void answer(ClientModel cl, int optionCode) {
-        if (answers == null)
+    public void answer(ClientModel cl,int optionCode)
+    {
+        if(answers == null)
             answers = new HashMap<>();
-        answers.put(cl, optionCode);
+        answers.put(cl,optionCode);
     }
-
-    public String show() {
-        String poll = "--------------------------------------------------\n" + title + "\n";
+    public String show()
+    {
+        String poll = "--------------------------------------------------\n"+title+"\n";
         for (int i = 0; i < options.size(); i++) {
-            poll += (i + 1) + "- " + options.get(i).toString() + "\n";
+            poll+=(i+1)+"- "+options.get(i).toString()+"\n";
         }
-        poll += "--------------------------------------------------";
+        poll+="--------------------------------------------------";
         return poll;
 
     }
-
     @Override
     public String toString() {
         return show();

@@ -1,13 +1,15 @@
 package client;
 
 import files.ActiveUsersFiles;
+import utils.consts.ConsoleDetail;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
-import static utils.ConsoleDetail.*;
+import static utils.consts.ConsoleDetail.*;
 
 public class ChatClient {
     private Socket socket;
@@ -81,8 +83,8 @@ public class ChatClient {
                             if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
                                 System.out.println(msgFromGroupChat);
 
-                                ChatClientCLI.getActiveUsersFromFile().remove(client.getUsername());
-                                ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsersFromFile());
+                                ChatClientCLI.getActiveUsers().remove(client.getUsername());
+                                ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
 
                                 closeEverything(socket, bufferedReader, bufferedWriter);
 

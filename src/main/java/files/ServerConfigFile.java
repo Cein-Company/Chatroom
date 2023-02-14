@@ -5,9 +5,8 @@ import server.config.ServerConfig;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 public class ServerConfigFile {
-    private static final Path configPath = Paths.get("serverConfig.txt");
+    private static final Path configPath = Paths.get( "serverConfig.txt");
 
     public static void writeConfig(ServerConfig config) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(configPath.toString()))) {
