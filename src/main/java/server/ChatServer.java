@@ -60,7 +60,13 @@ public class ChatServer {
                 if (scanner.hasNext()) {
                     scannedCommands = scanner.nextLine();
                     ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommands);
-                    System.out.println(commandRespond.getFullMessage());
+                    if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromServerToClient)) {
+                        for (ChatClientHandler client : getClientHandlers()) {
+                            client.messagingAClient(commandRespond);
+                            break;
+                        }
+                    } else
+                        System.out.println(commandRespond.getFullMessage());
 //                    ServerCli.command(scannedCommands);
                 }
             }

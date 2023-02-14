@@ -26,10 +26,8 @@ public class CommandHandlerServer {
                 return ServerCommandKick.kickCommand(commandTokens);
             case "/ban":
                 return ServerCommandBan.banCommand(commandTokens);
-            case "/config":
-                // Config
-            case "/poll":
-                // Poll
+            case "/message":
+                return ServerCommandMessage.messageCommand(commandTokens);
             case "/exit":
                 ChatServer.closeServerSocket();
                 return serverExitMsg;

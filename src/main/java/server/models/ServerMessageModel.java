@@ -119,7 +119,7 @@ public class ServerMessageModel implements Serializable {
                 return message;
             }
             default -> {
-                return "I heard a roar!";
+                return "I heard a roar in the ServerMessageModel class!";
             }
         }
     }
@@ -179,6 +179,10 @@ public class ServerMessageModel implements Serializable {
 
     public String getMessageTimeColored() {
         return messageTimeColored;
+    }
+
+    public void setClientModelReceiver(ClientModel clientModelReceiver) {
+        this.clientModelReceiver = clientModelReceiver;
     }
 
     private String getCurrentTime() {
