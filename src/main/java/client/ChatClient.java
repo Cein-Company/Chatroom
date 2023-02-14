@@ -108,6 +108,33 @@ public class ChatClient {
             System.out.println(RED_BOLD_BRIGHT + "You have left the chatroom. Goodbye." + RESET);
 
             closeEverything(socket, bufferedReader, bufferedWriter);
+
+            System.out.println("""
+                    \033[1;97m
+                    1. Return to main menu
+                    2. Exit
+                    \033[0m""");
+
+            label:
+            while (true) {
+                System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+
+                String choice = new Scanner(System.in).nextLine();
+
+                switch (choice) {
+                    case "1":
+                        ChatClientCLI.startMenu();
+                        break label;
+                    case "2":
+                        System.out.print(RED_BOLD_BRIGHT + "\nGoodbye." + RESET);
+                        break label;
+                    case "":
+                        continue;
+                    default:
+                        System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
+                        break;
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

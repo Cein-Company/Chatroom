@@ -18,7 +18,7 @@ public class ChatClientCLI {
     private static final Map<String, ClientModel> users = new HashMap<>();
     private static final ArrayList<String> activeUsers = new ArrayList<>();
 
-    private static void startMenu() {
+    public static void startMenu() {
         System.out.println(
                 """
                 \033[1;97mWelcome to our local chatroom.
