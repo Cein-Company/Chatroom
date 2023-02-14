@@ -28,6 +28,8 @@ public class CommandHandlerServer {
                 return ServerCommandBan.banCommand(commandTokens);
             case "/message":
                 return ServerCommandMessage.messageCommand(commandTokens);
+            case "/poll":
+                return ServerCommandPoll.messageCommand(commandTokens);
             case "/exit":
                 ChatServer.closeServerSocket();
                 return serverExitMsg;
