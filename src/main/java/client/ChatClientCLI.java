@@ -140,7 +140,7 @@ public class ChatClientCLI {
     private static void startChat(String username) {
         try {
             Socket socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
-            ChatClient client = new ChatClient(socket, username);
+            ChatClient client = new ChatClient(socket, users.get(username));
 
             System.out.println(CYAN_BOLD_BRIGHT +
                     "Login successful. You can start chatting now.\n" +

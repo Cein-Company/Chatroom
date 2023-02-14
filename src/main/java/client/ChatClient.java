@@ -13,18 +13,14 @@ import static utils.consts.ConsoleDetail.*;
 
 public class ChatClient {
     private Socket socket;
-    private String username;
-    private String coloredUsername;
+    private ClientModel client;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
 
-    public ChatClient(Socket socket, String username) {
-        String CLIENT_COLOR = BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
-
+    public ChatClient(Socket socket, ClientModel client) {
         try {
             this.socket = socket;
-            this.username = username;
-            this.coloredUsername = CLIENT_COLOR + this.username + RESET;
+            this.client = client;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
@@ -36,11 +32,11 @@ public class ChatClient {
         final String colon =CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
-            writeWithBuffered(coloredUsername);
+            writeWithBuffered(client.getColoredUsername());
 
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()) {
-                System.out.print(coloredUsername + colon);
+                System.out.print(client.getColoredUsername() + colon);
 
                 if (scanner.hasNext()) {
                     String messageToSend = scanner.nextLine();
@@ -55,7 +51,7 @@ public class ChatClient {
                         }
                         System.out.print(String.format("\033[%dA",1)); // Move up
                         System.out.print("\033[2K");
-                        messageToSend = getCurrentTime() +" -> " + coloredUsername + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
+                        messageToSend = getCurrentTime() +" -> " + client.getColoredUsername() + colon + WHITE_BOLD_BRIGHT + messageToSend + RESET;
                         System.out.println(messageToSend);
                         writeWithBuffered(messageToSend);
                     }
@@ -78,12 +74,12 @@ public class ChatClient {
                         msgFromGroupChat = bufferedReader.readLine();
 
                         if (msgFromGroupChat != null && msgFromGroupChat.length() != 0) {
-                            for (int i = 0; i < username.length() + 2; i++)
+                            for (int i = 0; i < client.getUsername().length() + 2; i++)
                                 System.out.print("\b");
                             if (msgFromGroupChat.equals("SERVER SHUTDOWN")) {
                                 System.out.println(msgFromGroupChat);
 
-                                ChatClientCLI.getActiveUsers().remove(username);
+                                ChatClientCLI.getActiveUsers().remove(client.getUsername());
                                 ActiveUsersFiles.writeActiveUsers(ChatClientCLI.getActiveUsers());
 
                                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -91,7 +87,7 @@ public class ChatClient {
                                 break;
                             }
                             System.out.println(msgFromGroupChat);
-                            System.out.print(coloredUsername + colon);
+                            System.out.print(client.getColoredUsername() + colon);
                         }
                     }
                 } catch (IOException e) {
@@ -105,7 +101,7 @@ public class ChatClient {
     public void clientLeaving() {
         try {
             String leftChatMessage = RED_BOLD_BRIGHT + "SERVER: " + RESET +
-                    coloredUsername + RED_BOLD_BRIGHT + " has left the chatroom." + RESET;
+                    client.getColoredUsername() + RED_BOLD_BRIGHT + " has left the chatroom." + RESET;
 
             writeWithBuffered(leftChatMessage);
 
@@ -124,7 +120,7 @@ public class ChatClient {
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        ChatClientCLI.removeActiveUsers(username);
+        ChatClientCLI.removeActiveUsers(client.getUsername());
 
         try {
             if (socket != null)
