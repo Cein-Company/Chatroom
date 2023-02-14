@@ -206,8 +206,8 @@ public class ChatServer {
             }
             return "";
         }
-        public static void command(String scannedCommands)
-        {
+
+        public static void command(String scannedCommands) {
             if (scannedCommands != null && scannedCommands.charAt(0)=='/'){
                 String[] commands = scannedCommands.replaceFirst("/","").split(" ");
                 if(commands.length ==0)
@@ -234,6 +234,20 @@ public class ChatServer {
                         System.out.println(users[0]);
                     }
                     case "kick"->{
+
+                    }
+                    // poll -args ---> poll -create -t "title" -o option1 option2 option3 ... ,
+                    //                 poll -result {poll code}
+                    //                 poll -end {poll code}
+                    case "poll"->{
+                        switch (commands[1].replaceFirst("-",""))
+                        {
+                            case "create"->{
+
+                            }
+                            case "result"->{}
+                            case "end"->{}
+                        }
 
                     }
                     case "ban"->{
