@@ -104,7 +104,11 @@ public class ServerMessageModel implements Serializable {
                 return messageTimeColored + indicator + clientModelSender.getColoredUsername() + colon + coloredMessage;
             }
             case ToAdminister -> {
-                return messageTimeColored + indicator + coloredMessage;
+                if (client != null) {
+                    return messageTimeColored + indicator + client.getColoredUsername() + coloredMessage;
+                } else  {
+                    return messageTimeColored + indicator + coloredMessage;
+                }
             }
             case ToAdministerAboutAClient -> {
                 return messageTimeColored + indicator + client.getColoredUsername() + coloredMessage;

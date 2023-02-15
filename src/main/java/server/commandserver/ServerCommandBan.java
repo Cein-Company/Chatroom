@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import static server.ChatClientHandler.getClientHandlers;
 
+// TODO: Ban Message is not saved in history
 public class ServerCommandBan {
     protected static ServerMessageModel banCommand(String[] commandTokens) {
         if (commandTokens.length == 2) {
@@ -24,6 +25,7 @@ public class ServerCommandBan {
                 for (ChatClientHandler client : getClientHandlers())
                     if (client.getClientUsername().equals(bannedClientModel.getUsername())) {
                         chatClientHandler = client;
+                        break;
                     }
 
                 if (chatClientHandler != null) {
@@ -79,7 +81,7 @@ public class ServerCommandBan {
 
                     return getUserUnBannedMsgToAll(unBannedClientModel);
                 } else
-                    return getUseWasntBanned(unBannedClientModel);
+                    return getUserWasntBanned(unBannedClientModel);
             } else
                 return getUserNotFoundMsg();
         } else
@@ -105,7 +107,7 @@ public class ServerCommandBan {
         return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, unBannedClientModel, " was unbanned from the chatroom.");
     }
 
-    private static ServerMessageModel getUseWasntBanned(ClientModel bannedClientModel) {
+    private static ServerMessageModel getUserWasntBanned(ClientModel bannedClientModel) {
         return new ServerMessageModel(ServerMessageMode.ToAdminister, bannedClientModel, " wasn't banned from the chatroom.");
     }
 

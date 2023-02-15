@@ -18,11 +18,9 @@ import java.util.Scanner;
 import static server.ChatClientHandler.getClientHandlers;
 import static utils.ConsoleDetail.*;
 
-// TODO: Rename to CeinChatroom
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components
 // Sign-in, Login, New Message, Commands, Exits
 // TODO: Some Exceptions still include "java.lang.Exception"
-// TODO: Some messages are sent twice, such as '/ban' or '/exit' message for client
 
 public class ChatServer {
     private static ServerConfig config;
@@ -59,21 +57,27 @@ public class ChatServer {
 
     public static void listenForServerCommands() {
         new Thread(() -> {
-            String scannedCommands;
+            String scannedCommand;
             Scanner scanner = new Scanner(System.in);
 
             while (isServerOn() && !serverSocket.isClosed()) {
+                System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+
                 if (scanner.hasNext()) {
-                    scannedCommands = scanner.nextLine();
-                    ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommands);
+                    scannedCommand = scanner.nextLine();
+
+                    ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommand);
+
                     if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromServerToClient)) {
                         for (ChatClientHandler client : getClientHandlers()) {
                             client.messagingAClient(commandRespond);
                             break;
                         }
-                    } else
+                    } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ToAdminister) ||
+                            commandRespond.getMessageMode().equals(ServerMessageMode.ListFromServer)) {
                         System.out.println(commandRespond.getFullMessage());
-                    //                    ServerCli.command(scannedCommands);
+                        //                    ServerCli.command(scannedCommands);
+                    }
                 }
             }
         }).start();

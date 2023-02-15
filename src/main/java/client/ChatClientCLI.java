@@ -12,6 +12,8 @@ import static utils.ConsoleDetail.*;
 // TODO: Sign-Up let's user reuse used Usernames
 // TODO: Wrong Password Exception doesn't work correctly
 // TODO: startMenu is not looped
+// TODO: sign-up & login empty values
+// TODO: Client's chat enter message doesn't show for themself
 
 public class ChatClientCLI {
 
