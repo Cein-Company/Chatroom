@@ -4,16 +4,19 @@ import client.models.ClientModel;
 import utils.ArraysHelper;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class MyActiveUsersFiles extends Files {
-    private static final String activeUsersPath = path + "\\ActiveUsers.txt";
+    private static final Path activeUsersPath =
+            Paths.get(System.getProperty("user.dir"), "ChatroomFiles", "ActiveUsers.txt");
 
     protected static void readActiveUsers() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(activeUsersPath));) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(activeUsersPath.toString()));) {
             activeUsers = (ArrayList<String>) in.readObject();
         } catch (FileNotFoundException | EOFException ignored) {
         } catch (IOException | ClassNotFoundException e) {
@@ -22,7 +25,7 @@ public class MyActiveUsersFiles extends Files {
     }
 
     protected static void writeActiveUsers() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(activeUsersPath))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(activeUsersPath.toString()))) {
             out.writeObject(activeUsers);
         } catch (IOException e) {
             System.out.println(e.getMessage() + "\n" + ArraysHelper.toString(e.getStackTrace()));

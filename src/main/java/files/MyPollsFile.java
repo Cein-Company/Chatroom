@@ -5,18 +5,20 @@ import common_models.poll.PollStatus;
 import utils.ArraysHelper;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static files.Files.path;
 import static files.Files.polls;
 
 public class MyPollsFile {
 
-    private static final String pollPath = path + "\\Polls.txt";
+    private static final Path pollPath =
+            Paths.get(System.getProperty("user.dir"), "ChatroomFiles", "Polls.txt");
 
     protected static void readPolls() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(pollPath));) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(pollPath.toString()));) {
             polls = (ArrayList<PollModel>) in.readObject();
         } catch (FileNotFoundException | EOFException ignored) {
         } catch (IOException | ClassNotFoundException e) {
@@ -25,7 +27,7 @@ public class MyPollsFile {
     }
 
     protected static void writePolls() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pollPath))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pollPath.toString()))) {
             out.writeObject(polls);
         } catch (IOException e) {
             System.out.println(e.getMessage() + "\n" + ArraysHelper.toString(e.getStackTrace()));

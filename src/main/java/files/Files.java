@@ -5,12 +5,15 @@ import common_models.poll.PollModel;
 import server.models.ServerMessageModel;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Files {
-    protected static final String path = "D:\\ChatroomFiles";
+    private static final Path path =
+            Paths.get(System.getProperty("user.dir"), "ChatroomFiles");
 
     protected static ArrayList<String> activeUsers = new ArrayList<>();
     protected static Map<String, ClientModel> users = new HashMap<>();
@@ -18,7 +21,7 @@ public abstract class Files {
     protected static ArrayList<PollModel> polls = new ArrayList<>();
 
     public static void readFiles() {
-        new File(path).mkdir();
+        new File(path.toString()).mkdir();
 
         MyUsersFiles.readUsers();
         MyMessagesFiles.readMessages();
