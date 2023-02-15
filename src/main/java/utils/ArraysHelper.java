@@ -13,7 +13,7 @@ public class ArraysHelper {
         b.append("\n");
 
         for (int i = 0; ; i++) {
-            b.append(String.valueOf(a[i]));
+            b.append(a[i]);
             if (i == iMax) {
                 b.append("\n");
                 return b.toString();

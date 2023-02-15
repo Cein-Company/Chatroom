@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static utils.ConsoleDetail.*;
 
-// TODO: Selecting 'N' when server is offline
 public class SignInteractHandler {
 
     private static final String SIGN_UP = "sign_up";
@@ -111,27 +110,42 @@ public class SignInteractHandler {
     }
 
     private void setUpSocket() {
-        try {
-            this.socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
-            this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-            this.inputStream = new ObjectInputStream(socket.getInputStream());
-            outputStream.writeObject("SIGN_INTERACT");
-            outputStream.flush();
-            isServerOn = true;
-            listenForMessage();
-        } catch (IOException e) {
-            System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
-            System.out.println(CYAN_BOLD_BRIGHT + "Try Again? (Y/N)" + RESET);
-            switch (new Scanner(System.in).nextLine().trim().toLowerCase()) {
-                case "y":
-                    setUpSocket();
-                default:
-                    return;
+        outer:
+        while (true) {
+            try {
+                this.socket = new Socket(InetAddress.getLoopbackAddress(), 4444);
+                this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+                this.inputStream = new ObjectInputStream(socket.getInputStream());
+
+                outputStream.writeObject("SIGN_INTERACT");
+                outputStream.flush();
+                isServerOn = true;
+
+                listenForMessage();
+                break;
+            } catch (IOException e) {
+                System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
+                inner:
+                while (true) {
+                    System.out.println(CYAN_BOLD_BRIGHT + "Try Again? (Y/N)" + RESET);
+                    System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+
+                    switch (new Scanner(System.in).nextLine().trim().toLowerCase()) {
+                        case "y" -> {
+                            break inner;
+                        }
+                        case "n" -> {
+                            isServerOn = false;
+                            break outer;
+                        }
+                        default -> System.out.println(RED_BOLD_BRIGHT + "Invalid Command." + RESET);
+                    }
+                }
             }
         }
     }
 
-    public void signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
+    public boolean signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
         // /signup username password
         ClientMessageModel request = new ClientMessageModel<ClientModel>(null, SIGN_UP, newClient);
 
@@ -157,6 +171,8 @@ public class SignInteractHandler {
                 e.printStackTrace();
             }
         };
+
+        return true;
     }
 
     public void login(InteractiveInterface<ClientModel> result, String username, String password) {
@@ -194,5 +210,9 @@ public class SignInteractHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isServerOn() {
+        return isServerOn;
     }
 }

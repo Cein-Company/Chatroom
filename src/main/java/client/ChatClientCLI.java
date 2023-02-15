@@ -1,7 +1,6 @@
 package client;
 
 import client.models.ClientModel;
-import utils.InteractiveInterface;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -136,10 +135,17 @@ public class ChatClientCLI {
     public static void main(String[] args) {
         signHandler = new SignInteractHandler();
 
-        try {
-            startMenu();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (signHandler.isServerOn()) {
+            System.out.println(CYAN_BOLD_BRIGHT + "CONNECTION TO SERVER WAS SUCCESSFUL." + RESET + "\n");
+            try {
+                startMenu();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println(RED_BOLD_BRIGHT + """
+                    CONNECTING TO SERVER WAS UNSUCCESSFUL.
+                    CLOSING THE APP NOW...""" + RESET);
         }
     }
 }
