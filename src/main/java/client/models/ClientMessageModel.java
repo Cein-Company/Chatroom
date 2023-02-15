@@ -8,8 +8,9 @@ import java.util.UUID;
 
 import static utils.ConsoleDetail.*;
 
-public class ClientMessageModel<T> implements Serializable {
-//    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
+// TODO: ClientMessageModel's Generic Value Not Handled across Files
+public class ClientMessageModel <T> implements Serializable {
+    //    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
 
     private final String message;
     private final String coloredMessage;
@@ -21,6 +22,7 @@ public class ClientMessageModel<T> implements Serializable {
     private final boolean isCommand;
     private final boolean isExitCommand;
     private ClientMessageMode mode;
+
     public ClientMessageModel(ClientModel sender, String message) {
         this.message = message;
         this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
@@ -31,7 +33,8 @@ public class ClientMessageModel<T> implements Serializable {
         this.isExitCommand = this.message.equals("/exit");
         mode = ClientMessageMode.MESSAGE;
     }
-    public ClientMessageModel(ClientModel sender, String message,T data) {
+
+    public ClientMessageModel(ClientModel sender, String message, T data) {
         this.message = message;
         this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
         this.sender = sender;

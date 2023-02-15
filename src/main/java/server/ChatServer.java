@@ -18,6 +18,12 @@ import java.util.Scanner;
 import static server.ChatClientHandler.getClientHandlers;
 import static utils.ConsoleDetail.*;
 
+// TODO: Rename to CeinChatroom
+// TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components
+// Sign-in, Login, New Message, Commands, Exits
+// TODO: Some Exceptions still include "java.lang.Exception"
+// TODO: Some messages are sent twice, such as '/ban' or '/exit' message for client
+
 public class ChatServer {
     private static ServerConfig config;
     private static ServerSocket serverSocket;
@@ -67,7 +73,7 @@ public class ChatServer {
                         }
                     } else
                         System.out.println(commandRespond.getFullMessage());
-//                    ServerCli.command(scannedCommands);
+                    //                    ServerCli.command(scannedCommands);
                 }
             }
         }).start();

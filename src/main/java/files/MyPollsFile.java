@@ -33,21 +33,21 @@ public class MyPollsFile {
     }
 
     public static PollModel getPoll(String detail) {
-       readPolls();
-       try {
-           return polls.stream()
-                   .filter(p->p.getUniqueName().equals(detail) || p.getPollId().toString().equals((detail)))
-                   .findFirst()
-                   .get();
-       }catch (Exception exception){
-           return null;
-       }
+        readPolls();
+        try {
+            return polls.stream()
+                    .filter(p -> p.getUniqueName().equals(detail) || p.getPollId().toString().equals((detail)))
+                    .findFirst()
+                    .get();
+        } catch (Exception exception) {
+            return null;
+        }
 
     }
 
     public static ArrayList<PollModel> allPolls() {
         readPolls();
-        return  polls;
+        return polls;
     }
 
     public static void addPoll(PollModel poll) {
@@ -56,12 +56,11 @@ public class MyPollsFile {
         writePolls();
     }
 
-    public static boolean votePoll(UUID clientId,String detail , int index)
-    {
+    public static boolean votePoll(UUID clientId, String detail, int index) {
         PollModel poll = getPoll(detail);
         if (poll == null)
             return false;
-        poll.vote(clientId,index);
+        poll.vote(clientId, index);
         writePolls();
         return true;
     }
@@ -72,10 +71,10 @@ public class MyPollsFile {
         writePolls();
     }
 
-    public static boolean changePollStatus(PollStatus status,String detail) {
+    public static boolean changePollStatus(PollStatus status, String detail) {
         PollModel poll = getPoll(detail);
-        if(poll == null)
-            return false ;
+        if (poll == null)
+            return false;
 
         poll.setStatus(status);
         writePolls();

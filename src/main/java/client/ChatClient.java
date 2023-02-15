@@ -17,7 +17,7 @@ import java.util.Scanner;
 import static utils.ConsoleDetail.*;
 
 public class ChatClient {
-    private static ArrayList<ChatClient> chatClients = new ArrayList<>();
+    private static final ArrayList<ChatClient> chatClients = new ArrayList<>();
 
     private Socket socket;
     private ClientModel client;

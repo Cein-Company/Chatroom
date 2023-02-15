@@ -50,11 +50,11 @@ public class ServerCommandKick {
     }
 
     private static ServerMessageModel getUserKickedMsg() {
-        return new ServerMessageModel(ServerMessageMode.ServerKickMsg,"You were kicked out from the chatroom.");
+        return new ServerMessageModel(ServerMessageMode.ServerKickMsg, "You were kicked out from the chatroom.");
     }
 
     private static ServerMessageModel getUserKickedMsgToAll(ClientModel kickedUserModel) {
-         return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, kickedUserModel, " was kicked out from the chatroom.");
+        return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, kickedUserModel, " was kicked out from the chatroom.");
     }
 
     private static ServerMessageModel getNotOnline(ClientModel kickedUser) {
@@ -62,10 +62,10 @@ public class ServerCommandKick {
     }
 
     private static ServerMessageModel getUserNotFoundMsg() {
-        return new ServerMessageModel(ServerMessageMode.ToAdminister,"No such user was found in the server.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "No such user was found in the server.");
     }
 
     private static ServerMessageModel getInvalidKickCommandMsg() {
-        return new ServerMessageModel(ServerMessageMode.ToAdminister,"Please Use the /kick command correctly.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Please Use the /kick command correctly.");
     }
 }

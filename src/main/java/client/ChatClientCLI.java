@@ -1,8 +1,6 @@
 package client;
 
 import client.models.ClientModel;
-import files.MyActiveUsersFiles;
-import files.MyUsersFiles;
 import utils.InteractiveInterface;
 
 import java.io.IOException;
@@ -11,6 +9,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import static utils.ConsoleDetail.*;
+
+// TODO: Sign-Up let's user reuse used Usernames
+// TODO: Wrong Password Exception doesn't work correctly
+// TODO: startMenu is not looped
 
 public class ChatClientCLI {
 
@@ -22,8 +24,8 @@ public class ChatClientCLI {
     public static void startMenu() throws InterruptedException {
         System.out.println(
                 """
-                        \033[1;97mWelcome to our local chatroom.
-                                        
+                        \033[1;96mWelcome to our local chatroom.\033[0m
+                        \033[1;97m
                         1. Sign up
                         2. Login
                         3. Exit
@@ -34,18 +36,10 @@ public class ChatClientCLI {
         String choice = new Scanner(System.in).nextLine();
 
         switch (choice) {
-            case "1":
-                signUp();
-                break;
-            case "2":
-                login();
-                break;
-            case "3":
-                System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom." + RESET);
-                break;
-            default:
-                System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
-                break;
+            case "1" -> signUp();
+            case "2" -> login();
+            case "3" -> System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom." + RESET);
+            default -> System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
         }
     }
 
@@ -69,16 +63,16 @@ public class ChatClientCLI {
                 startMenu();
                 return;
             }
+
             final boolean[] hasResult = {false};
-            signHandler.signUp(new InteractiveInterface<ClientModel>() {
-                @Override
-                public void result(boolean result, String message, ClientModel data) {
-                    System.out.println(message);
-                    hasResult[0] = result;
-                    client = data;
-                }
+            signHandler.signUp((result, message, data) -> {
+                System.out.println(message);
+                hasResult[0] = result;
+                client = data;
             }, ClientModel.factory(username, password));
+
             Thread.sleep(DURATION);
+
             if (hasResult[0])
                 startChat(client);
             else
@@ -106,15 +100,14 @@ public class ChatClientCLI {
                 return;
             }
             final boolean[] hasResult = {false};
-            signHandler.login(new InteractiveInterface<ClientModel>() {
-                @Override
-                public void result(boolean result, String message, ClientModel data){
-                    System.out.println(message);
-                    hasResult[0]= result;
-                    client = data;
-                }
+            signHandler.login((result, message, data) -> {
+                System.out.println(message);
+                hasResult[0] = result;
+                client = data;
             }, username, password);
+
             Thread.sleep(DURATION);
+
             if (hasResult[0])
                 startChat(client);
             else
@@ -132,7 +125,6 @@ public class ChatClientCLI {
         ChatClient client = new ChatClient(serverSocket, clientModel);
 
         System.out.println(CYAN_BOLD_BRIGHT +
-                "Login successful. You can start chatting now.\n" +
                 "To see a list of available commands, use '/help'.\n" +
                 "To exit the chatroom, just write '/exit'.\n" + RESET);
 
@@ -143,6 +135,7 @@ public class ChatClientCLI {
 
     public static void main(String[] args) {
         signHandler = new SignInteractHandler();
+
         try {
             startMenu();
         } catch (InterruptedException e) {

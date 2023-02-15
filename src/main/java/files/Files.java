@@ -16,6 +16,7 @@ public abstract class Files {
     protected static Map<String, ClientModel> users = new HashMap<>();
     protected static ArrayList<ServerMessageModel> messages = new ArrayList<>();
     protected static ArrayList<PollModel> polls = new ArrayList<>();
+
     public static void readFiles() {
         new File(path).mkdir();
 

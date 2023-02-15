@@ -1,12 +1,9 @@
 package client;
 
-import client.models.ClientMessageMode;
 import client.models.ClientMessageModel;
 import client.models.ClientModel;
-import netscape.javascript.JSObject;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONString;
 import server.models.ServerMessageMode;
 import server.models.ServerMessageModel;
 import utils.InteractiveInterface;
@@ -22,6 +19,7 @@ import java.util.UUID;
 
 import static utils.ConsoleDetail.*;
 
+// TODO: Selecting 'N' when server is offline
 public class SignInteractHandler {
 
     private static final String SIGN_UP = "sign_up";
@@ -36,7 +34,6 @@ public class SignInteractHandler {
 
     public SignInteractHandler() {
         setUpSocket();
-
     }
 
     public void listenForMessage() {
@@ -49,21 +46,21 @@ public class SignInteractHandler {
                         response = (ServerMessageModel) inputStream.readObject();
 
                         if (response != null) {
-
                             if (response.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
                                 isServerOn = false;
                                 System.out.println(response.getFullMessage());
                                 closeEverything();
                                 break;
                             }
+
                             if (response.getMessageMode().equals(ServerMessageMode.ServerKickMsg)) {
                                 isKicked = true;
                                 System.out.println(response.getFullMessage());
                                 closeEverything();
                                 break;
                             }
-                            checkResponse(response);
 
+                            checkResponse(response);
                         }
                     }
                 } catch (IOException e) {
@@ -124,7 +121,7 @@ public class SignInteractHandler {
             listenForMessage();
         } catch (IOException e) {
             System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
-            System.out.println("try again ?(Y/n)");
+            System.out.println(CYAN_BOLD_BRIGHT + "Try Again? (Y/N)" + RESET);
             switch (new Scanner(System.in).nextLine().trim().toLowerCase()) {
                 case "y":
                     setUpSocket();
@@ -137,58 +134,55 @@ public class SignInteractHandler {
     public void signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
         // /signup username password
         ClientMessageModel request = new ClientMessageModel<ClientModel>(null, SIGN_UP, newClient);
+
+        // TODO: Why setUpSocket when server is off?
         if (isServerOn && socket.isConnected())
             sendRequest(request);
         else {
             setUpSocket();
         }
-        listener = new JsonRequestResponse() {
-            @Override
-            public void result(JSONObject response) {
-                // condition : SUCCESSFULL,ERROR,TAKEN,
-                try {
-                    boolean condition = response.getBoolean("condition");
-                    String error = response.getString("content");
-                    JSONObject clientModel = response.getJSONObject("client");
-                    ClientModel client = new ClientModel(clientModel.getString("username"),
-                            clientModel.getString("password"),
-                            UUID.fromString(clientModel.getString("id")));
-                    result.result(condition, error, client);
-                    closeEverything();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
+        listener = response -> {
+            // condition : SUCCESSFULL,ERROR,TAKEN,
+            try {
+                boolean condition = response.getBoolean("condition");
+                String error = response.getString("content");
+                JSONObject clientModel = response.getJSONObject("client");
+                ClientModel client = new ClientModel(clientModel.getString("username"),
+                        clientModel.getString("password"),
+                        UUID.fromString(clientModel.getString("id")));
+                result.result(condition, error, client);
+                closeEverything();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         };
     }
 
     public void login(InteractiveInterface<ClientModel> result, String username, String password) {
         ClientMessageModel request = new ClientMessageModel<ClientModel>(null, LOGIN, ClientModel.factory(username, password));
+
         if (isServerOn && socket.isConnected())
             sendRequest(request);
         else
             setUpSocket();
-        listener = new JsonRequestResponse() {
-            @Override
-            public void result(JSONObject response) {
-                // condition : SUCCESS,ERROR,TAKEN,
-                try {
-                    boolean condition = response.getBoolean("condition");
-                    String content = response.getString("content");
-                    ClientModel client = null;
-                    if (condition) {
-                        JSONObject clientModel = response.getJSONObject("client");
-                        client = new ClientModel(clientModel.getString("username"),
-                                clientModel.getString("password"),
-                                UUID.fromString(clientModel.getString("id")));
-                    }
-                    result.result(condition, content, client);
-                    closeEverything();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
+        listener = response -> {
+            // condition : SUCCESS,ERROR,TAKEN,
+            try {
+                boolean condition = response.getBoolean("condition");
+                String content = response.getString("content");
+                ClientModel client = null;
+                if (condition) {
+                    JSONObject clientModel = response.getJSONObject("client");
+                    client = new ClientModel(clientModel.getString("username"),
+                            clientModel.getString("password"),
+                            UUID.fromString(clientModel.getString("id")));
+                }
+                result.result(condition, content, client);
+                closeEverything();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         };
     }
@@ -197,10 +191,8 @@ public class SignInteractHandler {
         try {
             outputStream.writeObject(request);
             outputStream.flush();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

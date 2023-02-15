@@ -15,7 +15,7 @@ public class CommandHandlerClient {
             case "/help" -> ClientCommandHelp.helpCommand(commandTokens);
             case "/message" -> ClientCommandMessage.messageCommand(clientMessage, commandTokens);
             case "/exit" -> ClientCommandExit.exitCommand(chatClientHandler, clientMessage, commandTokens);
-            case "/poll" -> ClientCommandPoll.pollCommand(clientMessage.getSender(),commandTokens);
+            case "/poll" -> ClientCommandPoll.pollCommand(clientMessage.getSender(), commandTokens);
             default -> getInvalidCommandMsg();
         };
     }

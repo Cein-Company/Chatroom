@@ -16,7 +16,7 @@ public class ClientModel implements Serializable {
 
     private boolean banned;
 
-    public ClientModel(String username, String password,UUID clientId) {
+    public ClientModel(String username, String password, UUID clientId) {
         this.username = username;
         this.password = password;
         this.clientId = clientId;
@@ -24,6 +24,7 @@ public class ClientModel implements Serializable {
         this.coloredUsername = CLIENT_COLOR + this.username + RESET;
         this.banned = false;
     }
+
     public String getUsername() {
         return username;
     }
@@ -44,10 +45,10 @@ public class ClientModel implements Serializable {
         this.banned = banned;
     }
 
-    public static ClientModel factory(String username , String password )
-    {
-        return new ClientModel(username,password,null);
+    public static ClientModel factory(String username, String password) {
+        return new ClientModel(username, password, null);
     }
+
     public UUID getClientId() {
         return clientId;
     }

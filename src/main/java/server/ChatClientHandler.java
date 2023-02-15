@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static server.ChatServer.isServerOn;
+import static utils.ConsoleDetail.CYAN_BOLD_BRIGHT;
+import static utils.ConsoleDetail.RESET;
 
+// TODO: Client name color changes on each login
 public class ChatClientHandler implements Runnable {
     private static final ArrayList<ChatClientHandler> clientHandlers = new ArrayList<>();
     private static final String SIGN_UP = "sign_up";
@@ -41,7 +44,7 @@ public class ChatClientHandler implements Runnable {
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             Object obj = objectInputStream.readObject();
-            if(obj != null && obj instanceof ClientModel) {
+            if (obj != null && obj instanceof ClientModel) {
                 this.clientModel = (ClientModel) obj;
                 this.clientUsername = clientModel.getUsername();
 
@@ -71,21 +74,21 @@ public class ChatClientHandler implements Runnable {
             try {
                 if (isServerOn()) {
                     Object readObject = objectInputStream.readObject();
-                    if (readObject !=null && readObject instanceof ClientMessageModel<?>)
-                         clientMessage = (ClientMessageModel)readObject;
+                    if (readObject != null && readObject instanceof ClientMessageModel<?>)
+                        clientMessage = (ClientMessageModel) readObject;
                     if (clientMessage != null) {
-                        if(clientMessage.getMode() == ClientMessageMode.MESSAGE) {
+                        if (clientMessage.getMode() == ClientMessageMode.MESSAGE) {
                             if (clientMessage.isCommand()) {
                                 ServerMessageModel commandRespond =
                                         CommandHandlerClient.commandHandler(this, clientMessage);
                                 messageHandling(commandRespond);
-                            } else{
+                            } else {
                                 ServerMessageModel serverMessageModel =
                                         new ServerMessageModel(ServerMessageMode.FromClient, clientMessage);
 
                                 messageHandling(serverMessageModel);
                             }
-                        }else if (clientMessage.getMode() == ClientMessageMode.SIGN_INTERACT) {
+                        } else if (clientMessage.getMode() == ClientMessageMode.SIGN_INTERACT) {
                             try {
                                 messageHandling(entranceHandling(clientMessage));
                             } catch (JSONException e) {
@@ -107,14 +110,14 @@ public class ChatClientHandler implements Runnable {
     private ServerMessageModel entranceHandling(ClientMessageModel clientMessage) throws JSONException {
         JSONObject response = new JSONObject();
         ServerMessageModel serverMessageModel = null;
-        if(clientMessage.getData() != null &&
+        if (clientMessage.getData() != null &&
                 clientMessage.getData() instanceof ClientModel) {
             ClientModel clientModel = (ClientModel) clientMessage.getData();
             try {
                 try {
-                    if(clientMessage.getMessage().equals(SIGN_UP))
-                       EntranceHandler.register(clientModel);
-                    else if(clientMessage.getMessage().equals(LOGIN)) {
+                    if (clientMessage.getMessage().equals(SIGN_UP))
+                        EntranceHandler.register(clientModel);
+                    else if (clientMessage.getMessage().equals(LOGIN)) {
                         EntranceHandler.login(clientModel);
                         clientModel = MyUsersFiles.getUserByName(clientModel.getUsername());
                     }
@@ -122,32 +125,35 @@ public class ChatClientHandler implements Runnable {
                     JSONObject clientJO = new JSONObject();
                     clientJO.put("username", clientModel.getUsername());
                     clientJO.put("password", clientModel.getPassword());
-                    if(clientMessage.getMessage().equals(SIGN_UP))
-                       clientJO.put("id", UUID.randomUUID().toString());
+                    if (clientMessage.getMessage().equals(SIGN_UP))
+                        clientJO.put("id", UUID.randomUUID().toString());
                     else
                         clientJO.put("id", clientModel.getClientId().toString());
-                    response.put("content", "Operation is successfully end!!");
+                    response.put("content", CYAN_BOLD_BRIGHT +
+                            "Login successful. You can start chatting now.\n" + RESET);
                     response.put("client", clientJO);
                     MyActiveUsersFiles.save(clientModel.getUsername());
                 } catch (Exception e) {
+                    System.out.println("111");
+                    System.out.println(e.getMessage());
                     response.put("condition", false);
                     response.put("content", e.toString());
                 }
-            }catch (JSONException exception) {
-                response.put("content",exception.toString());
+            } catch (JSONException exception) {
+                response.put("content", exception.toString());
                 response.put("condition", false);
-
             }
-            serverMessageModel = new ServerMessageModel(ServerMessageMode.SignInteract,response.toString());
-        }
-        return serverMessageModel;
 
+            serverMessageModel = new ServerMessageModel(ServerMessageMode.SignInteract, response.toString());
+        }
+
+        return serverMessageModel;
     }
 
     public void messageHandling(ServerMessageModel serverMessage) {
         switch (serverMessage.getMessageMode()) {
             case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
-            case FromSerer, ListFromServer ,SignInteract-> sendMessageToClient(serverMessage);
+            case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
             case PMFromClientToServer -> System.out.println(serverMessage.getFullMessage());
             case PMFromClientToClient -> messagingAClient(serverMessage);
             case ServerShutdownMsg -> closeEverything();

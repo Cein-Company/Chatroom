@@ -148,7 +148,7 @@ public class ServerMessageModel implements Serializable {
                 return messageTime + indicator + PrivateAnnouncement + serverSender + colon + message;
             }
             default -> {
-                return "";
+                return "I heard a roar in the ServerMessageModel class!";
             }
         }
     }

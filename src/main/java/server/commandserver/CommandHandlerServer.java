@@ -6,6 +6,8 @@ import server.models.ServerMessageModel;
 
 import java.util.Locale;
 
+// TODO: /kick does not work
+
 public class CommandHandlerServer {
     private static final ServerMessageModel serverInvalidMsgModel =
             new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Command.");

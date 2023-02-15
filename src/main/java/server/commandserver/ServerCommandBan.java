@@ -61,7 +61,9 @@ public class ServerCommandBan {
         } else if (commandTokens.length == 3 && commandTokens[2].toLowerCase(Locale.ROOT).equals("-u")) {
             String unBannedUser = commandTokens[1];
             if (MyUsersFiles.contains(unBannedUser)) {
-                ClientModel unBannedClientModel = MyUsersFiles.getUserByName(unBannedUser);;;
+                ClientModel unBannedClientModel = MyUsersFiles.getUserByName(unBannedUser);
+                ;
+                ;
 
                 if (unBannedClientModel != null && unBannedClientModel.isBanned()) {
                     // Just takes a random client to send the unbanned message to all clients
@@ -108,10 +110,10 @@ public class ServerCommandBan {
     }
 
     private static ServerMessageModel getUserNotFoundMsg() {
-        return new ServerMessageModel(ServerMessageMode.ToAdminister,"No such user was found in the server.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "No such user was found in the server.");
     }
 
     private static ServerMessageModel getInvalidBanCommandMsg() {
-        return new ServerMessageModel(ServerMessageMode.ToAdminister,"Please Use the /ban command correctly.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Please Use the /ban command correctly.");
     }
 }
