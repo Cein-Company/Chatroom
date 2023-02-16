@@ -6,6 +6,9 @@ import server.models.ServerMessageModel;
 
 import java.util.Locale;
 
+// TODO: Rename /exit to /close for server closing
+// TODO: Ask for confirmation on server closing
+
 public class CommandHandlerServer {
     private static final ServerMessageModel serverInvalidMsgModel =
             new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Command.");

@@ -16,16 +16,17 @@ import java.util.Scanner;
 import static server.ChatClientHandler.getClientHandlers;
 import static utils.ConsoleDetail.*;
 
-// TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components
-// Sign-in, Login, New Message, Commands, Exits
-
-// TODO: Main Bug: SIGN_INTERACT
+// TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
+//       Sign-in, Login, New Message, Commands, Exits
+// TODO: Separate Server from Client
+// TODO: Fix spacing for '>'
 
 public class ChatServer {
     private static ServerConfig config;
     private static ServerSocket serverSocket;
     private static boolean serverOn = false;
 
+    // TODO: What are these?
     private static final int MAX_PORTS_RANGE = 65536;
     private static final int MIN_PORTS_RANGE = 0;
 
@@ -43,10 +44,9 @@ public class ChatServer {
 
         try {
             while (isServerOn() && !serverSocket.isClosed()) {
-                Socket socket = serverSocket.accept();//established
-                System.out.println(CYAN_BOLD_BRIGHT + "NEW CONNECTION ESTABLISHED !" + RESET);
-                ChatClientHandler client = new ChatClientHandler(socket);
-                Thread thread = new Thread(client);
+                Socket socket = serverSocket.accept(); // established
+                ChatClientHandler clientHandler = new ChatClientHandler(socket);
+                Thread thread = new Thread(clientHandler);
                 thread.start();
             }
         } catch (IOException e) {
@@ -69,14 +69,13 @@ public class ChatServer {
                     ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommand);
 
                     if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromServerToClient)) {
-                        for (ChatClientHandler client : getClientHandlers()) {
-                            client.messagingAClient(commandRespond);
+                        for (ChatClientHandler clientHandler : getClientHandlers()) {
+                            clientHandler.messagingAClient(commandRespond);
                             break;
                         }
                     } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ToAdminister) ||
                             commandRespond.getMessageMode().equals(ServerMessageMode.ListFromServer)) {
                         System.out.println(commandRespond.getFullMessage());
-                        //                    ServerCli.command(scannedCommands);
                     }
                 }
             }
@@ -87,14 +86,15 @@ public class ChatServer {
         serverOn = false;
 
         ServerMessageModel shutdownMsg =
-                new ServerMessageModel(ServerMessageMode.ServerShutdownMsg, "THE ADMINISTRATOR CLOSED THE SERVER.");
+                new ServerMessageModel(ServerMessageMode.ServerShutdownMsg,
+                        "THE ADMINISTRATOR CLOSED THE SERVER.");
         MyMessagesFiles.save(shutdownMsg);
 
         try {
-            ArrayList<ChatClientHandler> tempClients = new ArrayList<>(getClientHandlers());
-            for (ChatClientHandler client : tempClients) {
-                client.sendMessageToClient(shutdownMsg);
-                client.closeEverything();
+            ArrayList<ChatClientHandler> tempClientsHandler = new ArrayList<>(getClientHandlers());
+            for (ChatClientHandler clientHandler : tempClientsHandler) {
+                clientHandler.sendMessageToClient(shutdownMsg);
+                clientHandler.closeEverything();
             }
 
             if (serverSocket != null && !serverSocket.isClosed())
@@ -113,6 +113,7 @@ public class ChatServer {
         MyServerConfigFile.writeConfig(config);
     }
 
+    // TODO: What happened to this method?
     private static void restart() {
         try {
             closeServerSocket();

@@ -23,6 +23,7 @@ public class ClientMessageModel <T> implements Serializable {
     private final boolean isExitCommand;
     private ClientMessageMode mode;
 
+    // TODO: Refactor the constructors
     public ClientMessageModel(ClientModel sender, String message) {
         this.message = message;
         this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
@@ -34,16 +35,27 @@ public class ClientMessageModel <T> implements Serializable {
         mode = ClientMessageMode.MESSAGE;
     }
 
-    public ClientMessageModel(ClientModel sender, String message, T data) {
-        this.message = message;
-        this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
-        this.sender = sender;
+    public ClientMessageModel(ClientMessageMode messageMode) {
+        this.message = null;
+        this.coloredMessage = null;
+        this.sender = null;
         this.messageTime = getCurrentTime();
         this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
-        this.isCommand = this.message.startsWith("/");
-        this.isExitCommand = this.message.equals("/exit");
+        this.isCommand = false;
+        this.isExitCommand = false;
+        this.mode = messageMode;
+    }
+
+    public ClientMessageModel(ClientMessageMode messageMode, T data) {
+        this.message = null;
+        this.coloredMessage = null;
+        this.sender = null;
+        this.messageTime = getCurrentTime();
+        this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
+        this.isCommand = false;
+        this.isExitCommand = false;
         this.data = data;
-        mode = ClientMessageMode.SIGN_INTERACT;
+        this.mode = messageMode;
     }
 
     public String getFullMessage() {

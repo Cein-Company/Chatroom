@@ -22,9 +22,9 @@ public class ServerCommandBan {
                 bannedClientModel = MyUsersFiles.getUserByName(bannedUser);
 
                 ChatClientHandler chatClientHandler = null;
-                for (ChatClientHandler client : getClientHandlers())
-                    if (client.getClientUsername().equals(bannedClientModel.getUsername())) {
-                        chatClientHandler = client;
+                for (ChatClientHandler clientHandler : getClientHandlers())
+                    if (clientHandler.getClientUsername().equals(bannedClientModel.getUsername())) {
+                        chatClientHandler = clientHandler;
                         break;
                     }
 
@@ -45,8 +45,8 @@ public class ServerCommandBan {
 
                 if (bannedClientModel != null && !bannedClientModel.isBanned()) {
                     // Just takes a random client to send the ban message to all clients
-                    for (ChatClientHandler client : getClientHandlers()) {
-                        client.broadcastMessageToAll(getUserBanMsgToAll(false, bannedClientModel));
+                    for (ChatClientHandler clientHandler : getClientHandlers()) {
+                        clientHandler.broadcastMessageToAll(getUserBanMsgToAll(false, bannedClientModel));
                         break;
                     }
 
@@ -69,8 +69,8 @@ public class ServerCommandBan {
 
                 if (unBannedClientModel != null && unBannedClientModel.isBanned()) {
                     // Just takes a random client to send the unbanned message to all clients
-                    for (ChatClientHandler client : getClientHandlers()) {
-                        client.broadcastMessageToOthers(getUserUnBannedMsgToAll(unBannedClientModel));
+                    for (ChatClientHandler clientHandler : getClientHandlers()) {
+                        clientHandler.broadcastMessageToOthers(getUserUnBannedMsgToAll(unBannedClientModel));
                         break;
                     }
 

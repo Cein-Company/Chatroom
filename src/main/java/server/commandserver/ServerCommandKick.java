@@ -44,9 +44,9 @@ public class ServerCommandKick {
 
     protected static void kick(ClientModel kickedUser) {
         ArrayList<ChatClientHandler> tempClients = new ArrayList<>(getClientHandlers());
-        for (ChatClientHandler client : tempClients)
-            if (client.getClientModel().getUsername().equals(kickedUser.getUsername()))
-                client.closeEverything();
+        for (ChatClientHandler clientHandler : tempClients)
+            if (clientHandler.getClientModel().getUsername().equals(kickedUser.getUsername()))
+                clientHandler.closeEverything();
     }
 
     private static ServerMessageModel getUserKickedMsg() {

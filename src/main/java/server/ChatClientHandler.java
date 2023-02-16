@@ -27,56 +27,67 @@ import static utils.ConsoleDetail.RESET;
 // TODO: Client name color changes on each login
 public class ChatClientHandler implements Runnable {
     private static final ArrayList<ChatClientHandler> clientHandlers = new ArrayList<>();
-    private static final String SIGN_UP = "sign_up";
-    private static final String LOGIN = "login";
 
     private Socket socket;
 
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
 
-    private String clientUsername;
     private ClientModel clientModel;
+    private String clientUsername;
 
     public ChatClientHandler(Socket socket) {
         try {
             this.socket = socket;
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            Object obj = objectInputStream.readObject();
-            if (obj != null && obj instanceof ClientModel) {
-                this.clientModel = (ClientModel) obj;
-                this.clientUsername = clientModel.getUsername();
-
-                final String enteredChatMessage = " has entered the chat.";
-
-                ServerMessageModel enteredChatMsg =
-                        new ServerMessageModel(ServerMessageMode.FromServerAboutClient, clientModel, enteredChatMessage);
-
-                showMessageHistoryToClient();
-                broadcastMessageToAll(enteredChatMsg);
-            }
 
             clientHandlers.add(this);
         } catch (IOException e) {
             if (isServerOn())
                 closeEverything();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     public void run() {
-        ClientMessageModel clientMessage = null;
+        ClientMessageModel clientMessage;
 
         while (isServerOn() && socket.isConnected()) {
             try {
                 if (isServerOn()) {
-                    Object readObject = objectInputStream.readObject();
-                    if (readObject instanceof ClientMessageModel<?>)
-                        clientMessage = (ClientMessageModel) readObject;
-                    if (clientMessage != null) {
+                    Object obj = objectInputStream.readObject();
+
+                    if (obj instanceof ClientModel) {
+                        this.clientModel = (ClientModel) obj;
+                        this.clientUsername = clientModel.getUsername();
+                        MyActiveUsersFiles.save(clientModel.getUsername());
+
+                        final String enteredChatMessage = " has entered the chat.";
+
+                        ServerMessageModel enteredChatMsg =
+                                new ServerMessageModel(ServerMessageMode.FromServerAboutClient, clientModel, enteredChatMessage);
+
+                        showMessageHistoryToClient();
+                        broadcastMessageToAll(enteredChatMsg);
+                    }
+
+                    if (obj instanceof ClientMessageModel<?>) {
+                        clientMessage = (ClientMessageModel) obj;
+
+                        if (clientMessage.getMode().equals(ClientMessageMode.INITIAL_CONNECTION)) {
+                            System.out.println(CYAN_BOLD_BRIGHT + "NEW CONNECTION ESTABLISHED!" + RESET);
+                        }
+
+                        if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN)
+                                || clientMessage.getMode().equals(ClientMessageMode.LOGIN_IN)) {
+                            try {
+                                messageHandling(entranceHandling(clientMessage));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         if (clientMessage.getMode() == ClientMessageMode.MESSAGE) {
                             if (clientMessage.isCommand()) {
                                 ServerMessageModel commandRespond =
@@ -87,12 +98,6 @@ public class ChatClientHandler implements Runnable {
                                         new ServerMessageModel(ServerMessageMode.FromClient, clientMessage);
 
                                 messageHandling(serverMessageModel);
-                            }
-                        } else if (clientMessage.getMode() == ClientMessageMode.SIGN_INTERACT) {
-                            try {
-                                messageHandling(entranceHandling(clientMessage));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
                         }
                     }
@@ -110,14 +115,15 @@ public class ChatClientHandler implements Runnable {
     private ServerMessageModel entranceHandling(ClientMessageModel clientMessage) throws JSONException {
         JSONObject response = new JSONObject();
         ServerMessageModel serverMessageModel = null;
+
         if (clientMessage.getData() != null &&
                 clientMessage.getData() instanceof ClientModel) {
             ClientModel clientModel = (ClientModel) clientMessage.getData();
             try {
                 try {
-                    if (clientMessage.getMessage().equals(SIGN_UP))
+                    if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN))
                         EntranceHandler.register(clientModel);
-                    else if (clientMessage.getMessage().equals(LOGIN)) {
+                    else if (clientMessage.getMode().equals(ClientMessageMode.LOGIN_IN)) {
                         EntranceHandler.login(clientModel);
                         clientModel = MyUsersFiles.getUserByName(clientModel.getUsername());
                     }
@@ -125,21 +131,20 @@ public class ChatClientHandler implements Runnable {
                     JSONObject clientJO = new JSONObject();
                     clientJO.put("username", clientModel.getUsername());
                     clientJO.put("password", clientModel.getPassword());
-                    if (clientMessage.getMessage().equals(SIGN_UP))
+                    if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN))
                         clientJO.put("id", UUID.randomUUID().toString());
                     else
                         clientJO.put("id", clientModel.getClientId().toString());
                     response.put("content", CYAN_BOLD_BRIGHT +
                             "Login successful. You can start chatting now.\n" + RESET);
                     response.put("client", clientJO);
-                    MyActiveUsersFiles.save(clientModel.getUsername());
                 } catch (Exception e) {
                     response.put("condition", false);
-                    response.put("content", e.toString());
+                    response.put("content", e.getMessage());
                 }
-            } catch (JSONException exception) {
-                response.put("content", exception.toString());
+            } catch (JSONException jsonEx) {
                 response.put("condition", false);
+                response.put("content", jsonEx.getMessage());
             }
 
             serverMessageModel = new ServerMessageModel(ServerMessageMode.SignInteract, response.toString());
@@ -149,8 +154,6 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void messageHandling(ServerMessageModel serverMessage) {
-        System.out.println("comes to messageHandling");
-        System.out.println(serverMessage.getFullMessage());
         switch (serverMessage.getMessageMode()) {
             case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
             case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
@@ -167,37 +170,20 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void broadcastMessageToAll(ServerMessageModel serverMsgModelToSend) {
-        System.out.println("comes to broadcastMessageToAll");
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
-        for (ChatClientHandler client : clientHandlers) {
-            try {
-                client.getObjectOutputStream().writeObject(serverMsgModelToSend);
-                client.getObjectOutputStream().flush();
-            } catch (IOException e) {
-                if (isServerOn())
-                    closeEverything();
-                break;
-            }
-        }
+        for (ChatClientHandler clientHandler : clientHandlers)
+            clientHandler.sendMessageToClient(serverMsgModelToSend);
     }
 
     public void broadcastMessageToOthers(ServerMessageModel serverMsgModelToSend) {
-        System.out.println("comes to broadcastMessageToOthers");
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
-        for (ChatClientHandler client : clientHandlers) {
-            try {
-                if (!client.equals(this)) {
-                    client.getObjectOutputStream().writeObject(serverMsgModelToSend);
-                    client.getObjectOutputStream().flush();
-                }
-            } catch (IOException e) {
-                if (isServerOn())
-                    closeEverything();
-                break;
+        for (ChatClientHandler clientHandler : clientHandlers) {
+            if (!clientHandler.equals(this)) {
+                clientHandler.sendMessageToClient(serverMsgModelToSend);
             }
         }
     }
@@ -213,16 +199,9 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void messagingAClient(ServerMessageModel serverMsgModelToSend) {
-        for (ChatClientHandler client : clientHandlers) {
-            try {
-                if (client.getClientUsername().equals(serverMsgModelToSend.getClientModelReceiver().getUsername())) {
-                    client.getObjectOutputStream().writeObject(serverMsgModelToSend);
-                    client.getObjectOutputStream().flush();
-                    break;
-                }
-            } catch (IOException e) {
-                if (isServerOn())
-                    closeEverything();
+        for (ChatClientHandler clientHandler : clientHandlers) {
+            if (clientHandler.getClientUsername().equals(serverMsgModelToSend.getClientModelReceiver().getUsername())) {
+                clientHandler.sendMessageToClient(serverMsgModelToSend);
                 break;
             }
         }
@@ -241,7 +220,8 @@ public class ChatClientHandler implements Runnable {
 
         if (!isServerOn()) {
             ServerMessageModel shutdownMessage =
-                    new ServerMessageModel(ServerMessageMode.ServerShutdownMsg, "SERVER WAS SHUTDOWN BY THE ADMINISTRATOR.");
+                    new ServerMessageModel(ServerMessageMode.ServerShutdownMsg,
+                            "SERVER WAS SHUTDOWN BY THE ADMINISTRATOR.");
 
             try {
                 objectOutputStream.writeObject(shutdownMessage);
@@ -250,29 +230,19 @@ public class ChatClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+
         try {
             if (objectOutputStream != null)
                 objectOutputStream.close();
 
             if (objectInputStream != null)
                 objectInputStream.close();
+
             if (socket != null)
                 socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public ObjectInputStream getObjectInputStream() {
-        return objectInputStream;
-    }
-
-    public ObjectOutputStream getObjectOutputStream() {
-        return objectOutputStream;
     }
 
     public ClientModel getClientModel() {

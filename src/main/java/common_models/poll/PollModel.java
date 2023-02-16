@@ -5,6 +5,8 @@ import java.util.*;
 
 import static utils.ConsoleDetail.*;
 
+// TODO: Move common_models.poll to models package
+
 public class PollModel implements Serializable {
 
     private final UUID pollId;

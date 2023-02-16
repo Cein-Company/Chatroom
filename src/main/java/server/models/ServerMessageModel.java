@@ -21,6 +21,8 @@ public class ServerMessageModel implements Serializable {
     private String messageTime;
     private String messageTimeColored;
 
+    // TODO: Refactor the constructors
+
     public ServerMessageModel(ServerMessageMode messageMode, String message) {
         this.messageMode = messageMode;
 

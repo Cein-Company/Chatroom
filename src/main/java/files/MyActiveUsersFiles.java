@@ -44,6 +44,12 @@ public class MyActiveUsersFiles extends Files {
         writeActiveUsers();
     }
 
+    public static void clear() {
+        readActiveUsers();
+        activeUsers.clear();
+        writeActiveUsers();
+    }
+
     public static boolean contains(String username) {
         readActiveUsers();
         return activeUsers.contains(username);

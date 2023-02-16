@@ -25,8 +25,6 @@ public abstract class Files {
 
         MyUsersFiles.readUsers();
         MyMessagesFiles.readMessages();
-        MyActiveUsersFiles.readActiveUsers();
+        MyActiveUsersFiles.clear();
     }
-
-
 }

@@ -1,5 +1,6 @@
 package client;
 
+import client.models.ClientMessageMode;
 import client.models.ClientMessageModel;
 import client.models.ClientModel;
 import org.json.JSONException;
@@ -20,16 +21,16 @@ import java.util.UUID;
 import static utils.ConsoleDetail.*;
 
 public class SignInteractHandler {
-
-    private static final String SIGN_UP = "sign_up";
-    private static final String LOGIN = "login";
-
     private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private JsonRequestResponse listener;
     private boolean isServerOn;
+
+    // TODO: Why is isKicked here?
     private boolean isKicked;
+
+    private boolean initialConnectionResponse;
 
     public SignInteractHandler() {
         setUpSocket();
@@ -68,6 +69,7 @@ public class SignInteractHandler {
                     break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
+                    break;
                 }
             }
         }).start();
@@ -82,7 +84,7 @@ public class SignInteractHandler {
      *                 }
      */
     private void checkResponse(ServerMessageModel response) {
-        if (response.getMessageMode() == ServerMessageMode.SignInteract) {
+        if (response.getMessageMode().equals(ServerMessageMode.SignInteract)) {
             try {
                 JSONObject responseJso = new JSONObject(response.getMessage());
                 listener.result(responseJso);
@@ -96,14 +98,17 @@ public class SignInteractHandler {
         try {
             isServerOn = false;
 
+            if (socket != null)
+                socket.close();
+
             if (outputStream != null)
                 outputStream.close();
 
             if (inputStream != null)
                 inputStream.close();
-            if (socket != null)
-                socket.close();
 
+            if (!isServerOn)
+                System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,14 +122,17 @@ public class SignInteractHandler {
                 this.outputStream = new ObjectOutputStream(socket.getOutputStream());
                 this.inputStream = new ObjectInputStream(socket.getInputStream());
 
-                outputStream.writeObject("SIGN_INTERACT");
+                ClientMessageModel initialConnectionMsg = new ClientMessageModel(ClientMessageMode.INITIAL_CONNECTION);
+                outputStream.writeObject(initialConnectionMsg);
                 outputStream.flush();
+
                 isServerOn = true;
+                initialConnectionResponse = true;
 
                 listenForMessage();
+                // closeEverything();
                 break;
             } catch (IOException e) {
-                e.printStackTrace();
                 System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
                 inner:
                 while (true) {
@@ -148,14 +156,15 @@ public class SignInteractHandler {
 
     public void signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
         // /signup username password
-        ClientMessageModel request = new ClientMessageModel<ClientModel>(null, SIGN_UP, newClient);
+        ClientMessageModel request = new ClientMessageModel<ClientModel>(ClientMessageMode.SIGNING_IN, newClient);
 
         // TODO: Why setUpSocket when server is off?
-        if (isServerOn && socket.isConnected())
+        if (initialConnectionResponse && socket.isConnected()) {
             sendRequest(request);
-        else {
+        } else {
             setUpSocket();
         }
+
         listener = response -> {
             // condition : SUCCESSFUL, ERROR, TAKEN,
             try {
@@ -180,9 +189,9 @@ public class SignInteractHandler {
     }
 
     public void login(InteractiveInterface<ClientModel> result, String username, String password) {
-        ClientMessageModel request = new ClientMessageModel<ClientModel>(null, LOGIN, ClientModel.factory(username, password));
+        ClientMessageModel request = new ClientMessageModel<ClientModel>(ClientMessageMode.LOGIN_IN, ClientModel.factory(username, password));
 
-        if (isServerOn && socket.isConnected())
+        if (initialConnectionResponse && socket.isConnected())
             sendRequest(request);
         else
             setUpSocket();
@@ -221,5 +230,9 @@ public class SignInteractHandler {
 
     public boolean isServerOn() {
         return isServerOn;
+    }
+
+    public boolean getInitialConnectionResponse() {
+        return initialConnectionResponse;
     }
 }
