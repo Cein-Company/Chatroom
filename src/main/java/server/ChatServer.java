@@ -1,8 +1,6 @@
 package server;
 
-import files.Files;
-import files.MyMessagesFiles;
-import files.MyServerConfigFile;
+import files.*;
 import server.commandserver.CommandHandlerServer;
 import server.config.ServerConfig;
 import server.config.ServerMode;
@@ -20,7 +18,8 @@ import static utils.ConsoleDetail.*;
 
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components
 // Sign-in, Login, New Message, Commands, Exits
-// TODO: Some Exceptions still include "java.lang.Exception"
+
+// TODO: Main Bug: SIGN_INTERACT
 
 public class ChatServer {
     private static ServerConfig config;
@@ -33,7 +32,8 @@ public class ChatServer {
     public static void startServer() {
         serverOn = true;
 
-        ServerMessageModel turnOnMsg = new ServerMessageModel(ServerMessageMode.FromSerer, "THE ADMINISTRATOR OPENED THE SERVER.");
+        ServerMessageModel turnOnMsg =
+                new ServerMessageModel(ServerMessageMode.FromSerer, "THE ADMINISTRATOR OPENED THE SERVER.");
         MyMessagesFiles.save(turnOnMsg);
 
         System.out.println(RED_BOLD_BRIGHT + "SERVER CONNECTED!\n" +
@@ -61,7 +61,7 @@ public class ChatServer {
             Scanner scanner = new Scanner(System.in);
 
             while (isServerOn() && !serverSocket.isClosed()) {
-                System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+                System.out.print("\n" + CYAN_BOLD_BRIGHT + ">" + RESET);
 
                 if (scanner.hasNext()) {
                     scannedCommand = scanner.nextLine();
@@ -142,7 +142,5 @@ public class ChatServer {
             e.printStackTrace();
         }
     }
-
-
 }
 

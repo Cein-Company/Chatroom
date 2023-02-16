@@ -10,7 +10,7 @@ public class CommandHandlerServer {
     private static final ServerMessageModel serverInvalidMsgModel =
             new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Command.");
     private static final ServerMessageModel serverExitMsg =
-            new ServerMessageModel(ServerMessageMode.ToAdminister, "You have closed the Sever");
+            new ServerMessageModel(ServerMessageMode.ToAdminister, "You have closed the Sever.");
 
     public static ServerMessageModel commandHandler(String serverMessage) {
         String[] commandTokens = serverMessage.split("\\s+");

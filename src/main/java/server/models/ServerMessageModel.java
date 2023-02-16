@@ -92,7 +92,6 @@ public class ServerMessageModel implements Serializable {
         final String serverSender = RED_BOLD_BRIGHT + "SERVER" + RESET;
         final String PrivateAnnouncement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
 
-
         switch (messageMode) {
             case FromSerer, ServerShutdownMsg, ServerKickMsg -> {
                 return messageTimeColored + indicator + serverSender + colon + coloredMessage;
@@ -119,11 +118,11 @@ public class ServerMessageModel implements Serializable {
             case PMFromServerToClient -> {
                 return messageTimeColored + indicator + PrivateAnnouncement + serverSender + colon + coloredMessage;
             }
-            case ListFromServer -> {
+            case ListFromServer, SignInteract -> {
                 return message;
             }
             default -> {
-                return "I heard a roar in the ServerMessageModel class!";
+                return "I heard a roar in the ServerMessageModel class! -> " + message + " -> " + messageMode;
             }
         }
     }

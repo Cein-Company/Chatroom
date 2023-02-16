@@ -56,8 +56,8 @@ public class ChatClientHandler implements Runnable {
                 showMessageHistoryToClient();
                 broadcastMessageToAll(enteredChatMsg);
             }
-            clientHandlers.add(this);
 
+            clientHandlers.add(this);
         } catch (IOException e) {
             if (isServerOn())
                 closeEverything();
@@ -74,7 +74,7 @@ public class ChatClientHandler implements Runnable {
             try {
                 if (isServerOn()) {
                     Object readObject = objectInputStream.readObject();
-                    if (readObject != null && readObject instanceof ClientMessageModel<?>)
+                    if (readObject instanceof ClientMessageModel<?>)
                         clientMessage = (ClientMessageModel) readObject;
                     if (clientMessage != null) {
                         if (clientMessage.getMode() == ClientMessageMode.MESSAGE) {
@@ -149,16 +149,25 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void messageHandling(ServerMessageModel serverMessage) {
+        System.out.println("comes to messageHandling");
+        System.out.println(serverMessage.getFullMessage());
         switch (serverMessage.getMessageMode()) {
             case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
             case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
             case PMFromClientToServer -> System.out.println(serverMessage.getFullMessage());
             case PMFromClientToClient -> messagingAClient(serverMessage);
             case ServerShutdownMsg -> closeEverything();
+            default -> {
+                System.out.println("I heard a roar in ChatClientHandler Class!");
+                System.out.println("-> " + serverMessage + " -> " + serverMessage.getMessageMode());
+            }
         }
+
+        System.out.print("\n" + CYAN_BOLD_BRIGHT + ">" + RESET);
     }
 
     public void broadcastMessageToAll(ServerMessageModel serverMsgModelToSend) {
+        System.out.println("comes to broadcastMessageToAll");
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
@@ -175,6 +184,7 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void broadcastMessageToOthers(ServerMessageModel serverMsgModelToSend) {
+        System.out.println("comes to broadcastMessageToOthers");
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
@@ -241,7 +251,6 @@ public class ChatClientHandler implements Runnable {
             }
         }
         try {
-
             if (objectOutputStream != null)
                 objectOutputStream.close();
 
@@ -249,7 +258,6 @@ public class ChatClientHandler implements Runnable {
                 objectInputStream.close();
             if (socket != null)
                 socket.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

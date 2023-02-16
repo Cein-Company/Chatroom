@@ -17,7 +17,7 @@ public class ServerCommandMembers {
             StringBuilder usersList = new StringBuilder();
             int usersCount = 0;
             for (ClientModel user : MyUsersFiles.getAllUsersDuplicate().values())
-                usersList.append(++usersCount).append(". Username: ").append(user.getColoredUsername()).append("\n");
+                usersList.append("\n").append(++usersCount).append(". Username: ").append(user.getColoredUsername());
 
             return getMembersListMsg(usersList);
         } else if (commandTokens.length == 2 && commandTokens[1].toLowerCase(Locale.ROOT).equals("-o")) {
@@ -28,7 +28,8 @@ public class ServerCommandMembers {
             int onlineUsersCount = 0;
             for (ClientModel user : MyUsersFiles.getAllUsersDuplicate().values())
                 if (MyActiveUsersFiles.contains(user))
-                    onlineUsersList.append(++onlineUsersCount).append(". Username: ").append(user.getColoredUsername()).append("\n");
+                    onlineUsersList.append("\n")
+                            .append(++onlineUsersCount).append(". Username: ").append(user.getColoredUsername());
 
             return getOnlineUsersListMsg(onlineUsersList);
         } else

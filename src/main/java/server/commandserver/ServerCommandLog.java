@@ -17,9 +17,9 @@ public class ServerCommandLog {
 
         if (!MyMessagesFiles.getAllMessagesDuplicate().isEmpty()) {
             for (ServerMessageModel messageModel : MyMessagesFiles.getAllMessagesDuplicate())
-                logColored.append(messageModel.getFullMessage()).append("\n");
+                logColored.append("\n").append(messageModel.getFullMessage());
             for (ServerMessageModel messageModel : MyMessagesFiles.getAllMessagesDuplicate())
-                logColorless.append(messageModel.getColorlessMessage()).append("\n");
+                logColorless.append("\n").append(messageModel.getColorlessMessage());
         } else
             return geEmptyHistoryMsg();
 

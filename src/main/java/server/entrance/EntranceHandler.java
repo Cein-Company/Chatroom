@@ -11,13 +11,13 @@ import static utils.ConsoleDetail.RESET;
 
 public class EntranceHandler {
 
-    public static final String USERNAME_TAKEN = RED_BOLD_BRIGHT + "Username taken. Try again." + RESET;
-    public static final String NO_SUCH_CLIENT = RED_BOLD_BRIGHT + "No such username was found. Try again." + RESET;
+    public static final String USERNAME_TAKEN = RED_BOLD_BRIGHT + "Username taken. Please try again." + RESET;
+    public static final String NO_SUCH_CLIENT = RED_BOLD_BRIGHT + "No such username was found. Please try again." + RESET;
     public static final String CLIENT_BANNED = RED_BOLD_BRIGHT + "This user was banned from the chatroom." + RESET;
     public static final String ACTIVE_CLIENT = RED_BOLD_BRIGHT + "User is already in the chatroom." + RESET;
-    private static final String INCORRECT_PASSWORD = RED_BOLD_BRIGHT + "Password incorrect. Try again." + RESET;
+    private static final String INCORRECT_PASSWORD = RED_BOLD_BRIGHT + "Password incorrect. Please try again." + RESET;
 
-    public static boolean register(ClientModel newClient) throws Exception {
+    public static void register(ClientModel newClient) throws Exception {
         String usernameResult = checkUsername(newClient.getUsername());
         if (usernameResult != null)
             throw new Exception(usernameResult);
@@ -28,7 +28,6 @@ public class EntranceHandler {
 
         newClient = new ClientModel(newClient.getUsername(), newClient.getPassword(), UUID.randomUUID());
         MyUsersFiles.save(newClient);
-        return true;
     }
 
     public static boolean login(ClientModel client) throws Exception {

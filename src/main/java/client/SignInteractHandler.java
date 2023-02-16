@@ -124,6 +124,7 @@ public class SignInteractHandler {
                 listenForMessage();
                 break;
             } catch (IOException e) {
+                e.printStackTrace();
                 System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
                 inner:
                 while (true) {
@@ -145,7 +146,7 @@ public class SignInteractHandler {
         }
     }
 
-    public boolean signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
+    public void signUp(InteractiveInterface<ClientModel> result, ClientModel newClient) {
         // /signup username password
         ClientMessageModel request = new ClientMessageModel<ClientModel>(null, SIGN_UP, newClient);
 
@@ -155,24 +156,27 @@ public class SignInteractHandler {
         else {
             setUpSocket();
         }
-
         listener = response -> {
-            // condition : SUCCESSFULL,ERROR,TAKEN,
+            // condition : SUCCESSFUL, ERROR, TAKEN,
             try {
                 boolean condition = response.getBoolean("condition");
                 String error = response.getString("content");
-                JSONObject clientModel = response.getJSONObject("client");
-                ClientModel client = new ClientModel(clientModel.getString("username"),
-                        clientModel.getString("password"),
-                        UUID.fromString(clientModel.getString("id")));
+                ClientModel client = null;
+
+                if (condition) {
+                    JSONObject clientModel = response.getJSONObject("client");
+                    client = new ClientModel(clientModel.getString("username"),
+                            clientModel.getString("password"),
+                            UUID.fromString(clientModel.getString("id")));
+                }
+
                 result.result(condition, error, client);
-                closeEverything();
+                if (isServerOn)
+                    closeEverything();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         };
-
-        return true;
     }
 
     public void login(InteractiveInterface<ClientModel> result, String username, String password) {
@@ -184,19 +188,22 @@ public class SignInteractHandler {
             setUpSocket();
 
         listener = response -> {
-            // condition : SUCCESS,ERROR,TAKEN,
+            // condition : SUCCESS, ERROR, TAKEN,
             try {
                 boolean condition = response.getBoolean("condition");
                 String content = response.getString("content");
                 ClientModel client = null;
+
                 if (condition) {
                     JSONObject clientModel = response.getJSONObject("client");
                     client = new ClientModel(clientModel.getString("username"),
                             clientModel.getString("password"),
                             UUID.fromString(clientModel.getString("id")));
                 }
+
                 result.result(condition, content, client);
-                closeEverything();
+                if (isServerOn)
+                    closeEverything();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

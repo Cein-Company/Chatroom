@@ -48,7 +48,7 @@ public class ServerCommandHelp {
                 + kickCmd + indicator + kickDescription + "\n"
                 + banCmd + indicator + banDescription + "\n"
                 + unBanCmd + indicator + unBanDescription + "\n"
-                + exitCmd + indicator + exitDescription + "\n";
+                + exitCmd + indicator + exitDescription;
     }
 
     private static ServerMessageModel getHelpList() {
