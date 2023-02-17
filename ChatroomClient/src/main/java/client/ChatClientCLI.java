@@ -177,7 +177,6 @@ public class ChatClientCLI {
 
         client.listenForMessage();
         client.sendMessage();
-
     }
 
     public static void main(String[] args) {

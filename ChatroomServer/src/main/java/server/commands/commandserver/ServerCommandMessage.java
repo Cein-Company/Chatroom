@@ -41,6 +41,7 @@ public class ServerCommandMessage {
         return privateMessage;
     }
 
+    // TODO: Message is not sent to client
     private static ServerMessageModel getNotOnlineMsg(ClientModel clientAbout) {
         return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, clientAbout, "User is not online at the moment.");
     }

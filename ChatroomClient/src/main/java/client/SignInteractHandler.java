@@ -153,12 +153,10 @@ public class SignInteractHandler {
         // /signup username password
         ClientMessageModel signUpRequest = new ClientMessageModel(ClientMessageMode.SIGNING_IN, newClient);
 
-        // TODO: Why setUpSocket when server is off?
-        if (initialConnectionResponse && socket.isConnected()) {
+        if (initialConnectionResponse && socket.isConnected())
             sendRequest(signUpRequest);
-        } else {
+        else
             setUpSocket();
-        }
 
         listener = response -> {
             // condition : SUCCESS, ERROR, TAKEN

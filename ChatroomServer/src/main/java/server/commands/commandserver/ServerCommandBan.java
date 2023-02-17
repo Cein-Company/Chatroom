@@ -49,6 +49,10 @@ public class ServerCommandBan {
                         break;
                     }
 
+                    // If there are no clients to randomly choose:
+                    if (getClientHandlers().isEmpty())
+                        System.out.println(getUserBanMsgToAll(false, bannedClientModel).getFullMessage());
+
                     bannedClientModel.setBanned(true);
 
                     MyUsersFiles.remove(bannedClientModel);
@@ -70,6 +74,11 @@ public class ServerCommandBan {
                         clientHandler.broadcastMessageToAll(getUserUnBannedMsgToAll(unBannedClientModel));
                         break;
                     }
+
+                    // If there are no clients to randomly choose:
+                    if (getClientHandlers().isEmpty())
+                        System.out.println(getUserUnBannedMsgToAll(unBannedClientModel).getFullMessage());
+
 
                     unBannedClientModel.setBanned(false);
 

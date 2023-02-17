@@ -8,6 +8,8 @@ import models.servermessage.ServerMessageModel;
 
 import java.util.Locale;
 
+import static utils.ConsoleDetail.*;
+
 public class ServerCommandMembers {
     protected static ServerMessageModel membersCommand(String[] commandTokens) {
         if (commandTokens.length == 1) {
@@ -16,8 +18,17 @@ public class ServerCommandMembers {
 
             StringBuilder usersList = new StringBuilder();
             int usersCount = 0;
-            for (ClientModel user : MyUsersFiles.getAllUsersDuplicate().values())
-                usersList.append("\n").append(++usersCount).append(". Username: ").append(user.getColoredUsername());
+            for (ClientModel user : MyUsersFiles.getAllUsersDuplicate().values()) {
+                usersList
+                        .append(++usersCount)
+                        .append(WHITE_BOLD_BRIGHT + ". Username: " + RESET)
+                        .append(user.getColoredUsername());
+
+                if (user.isBanned())
+                    usersList.append(RED_BOLD_BRIGHT + " -- banned -- " + RESET);
+
+                usersList.append("\n");
+            }
 
             return getMembersListMsg(usersList);
         } else if (commandTokens.length == 2 && commandTokens[1].toLowerCase(Locale.ROOT).equals("-o")) {
@@ -28,8 +39,11 @@ public class ServerCommandMembers {
             int onlineUsersCount = 0;
             for (ClientModel user : MyUsersFiles.getAllUsersDuplicate().values())
                 if (MyActiveUsersFiles.contains(user))
-                    onlineUsersList.append("\n")
-                            .append(++onlineUsersCount).append(". Username: ").append(user.getColoredUsername());
+                    onlineUsersList
+                            .append(++onlineUsersCount)
+                            .append(". Username: ")
+                            .append(user.getColoredUsername())
+                            .append("\n");
 
             return getOnlineUsersListMsg(onlineUsersList);
         } else

@@ -18,7 +18,6 @@ import static utils.ConsoleDetail.*;
 
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
 //       Sign-in, Login, New Message, Commands, Exits
-// TODO: Fix spacing for '>'
 
 public class ChatServer {
     private static ServerConfig config;
@@ -40,9 +39,11 @@ public class ChatServer {
                 new ServerMessageModel(ServerMessageMode.FromSerer, "THE ADMINISTRATOR OPENED THE SERVER.");
         MyMessagesFiles.save(turnOnMsg);
 
-        System.out.println(RED_BOLD_BRIGHT + "SERVER CONNECTED!\n" +
-                "Type '/help' to see a list of available commands.\n" +
-                "Type '/shutdown' to close the server." + RESET);
+        System.out.println(RED_BOLD_BRIGHT + """
+                SERVER CONNECTED!
+                Type '/help' to see a list of available commands.
+                Type '/shutdown' to close the server.""" + RESET);
+
         listenForServerCommands();
 
         try {
@@ -64,7 +65,7 @@ public class ChatServer {
             Scanner scanner = new Scanner(System.in);
 
             while (isServerOn() && !serverSocket.isClosed()) {
-                System.out.print("\n" + CYAN_BOLD_BRIGHT + ">" + RESET);
+                System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
 
                 if (scanner.hasNext()) {
                     scannedCommand = scanner.nextLine().trim();

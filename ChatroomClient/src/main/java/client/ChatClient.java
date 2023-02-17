@@ -178,7 +178,11 @@ public class ChatClient {
             if (!isServerOn || isKicked)
                 System.exit(0);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.print(RED_BOLD_BRIGHT + """
+                   
+                    CONNECTION TO SERVER WAS UNEXPECTEDLY ABORTED.
+                    EXITING THE APP NOW...
+                    """ + RESET);
         }
     }
 }

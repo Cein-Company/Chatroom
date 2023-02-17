@@ -75,6 +75,8 @@ public class ChatClientHandler implements Runnable {
                         clientMessage = (ClientMessageModel) obj;
 
                         if (clientMessage.getMode().equals(ClientMessageMode.INITIAL_CONNECTION)) {
+                            clearInputSymbol();
+
                             System.out.println(CYAN_BOLD_BRIGHT + "NEW CONNECTION ESTABLISHED!" + RESET);
                         }
 
@@ -100,6 +102,8 @@ public class ChatClientHandler implements Runnable {
                             }
                         }
                     }
+
+                    showInputSymbol();
                 }
             } catch (IOException e) {
                 if (isServerOn())
@@ -161,7 +165,10 @@ public class ChatClientHandler implements Runnable {
         switch (serverMessage.getMessageMode()) {
             case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
             case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
-            case PMFromClientToServer -> System.out.println(serverMessage.getFullMessage());
+            case PMFromClientToServer -> {
+                clearInputSymbol();
+                System.out.println(serverMessage.getFullMessage());
+            }
             case PMFromClientToClient -> messagingAClient(serverMessage);
             case ServerShutdownMsg -> closeEverything();
             default -> {
@@ -169,11 +176,10 @@ public class ChatClientHandler implements Runnable {
                 System.out.println("-> " + serverMessage + " -> " + serverMessage.getMessageMode());
             }
         }
-
-        System.out.print("\n" + CYAN_BOLD_BRIGHT + ">" + RESET);
     }
 
     public void broadcastMessageToAll(ServerMessageModel serverMsgModelToSend) {
+        clearInputSymbol();
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
@@ -182,6 +188,7 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void broadcastMessageToOthers(ServerMessageModel serverMsgModelToSend) {
+        clearInputSymbol();
         System.out.println(serverMsgModelToSend.getFullMessage());
         MyMessagesFiles.save(serverMsgModelToSend);
 
@@ -260,5 +267,15 @@ public class ChatClientHandler implements Runnable {
 
     public static ArrayList<ChatClientHandler> getClientHandlers() {
         return clientHandlers;
+    }
+
+    private static void clearInputSymbol() {
+        // To clear '>'
+        for (int i = 0; i < 12; i++)
+            System.out.print("\b");
+    }
+
+    private static void showInputSymbol() {
+        System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
     }
 }
