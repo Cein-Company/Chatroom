@@ -9,8 +9,6 @@ import java.util.Scanner;
 
 import static utils.ConsoleDetail.*;
 
-// TODO: Wrong Password Exception doesn't work correctly
-// TODO: sign-up & login empty values
 // TODO: Client's chat enter message doesn't show for themself
 
 public class ChatClientCLI {
@@ -73,76 +71,98 @@ public class ChatClientCLI {
         String username;
         String password;
 
-        while (true) {
-            System.out.print(WHITE_BOLD_BRIGHT + "Username ('0' to return) : " + RESET);
-            username = new Scanner(System.in).nextLine();
+        System.out.print(WHITE_BOLD_BRIGHT + "Username ('0' to return) : " + RESET);
+        username = new Scanner(System.in).nextLine().trim();
 
-            if (username.equals("0")) {
-                makeInitialConnection();
-                return;
-            }
-
-            System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
-            password = new Scanner(System.in).nextLine();
-
-            if (password.equals("0")) {
-                makeInitialConnection();
-                return;
-            }
-
-            final boolean[] hasResult = {false};
-            signHandler.signUp((result, message, data) -> {
-                System.out.println(message);
-                hasResult[0] = result;
-                client = data;
-            }, ClientModel.factory(username, password));
-
-            Thread.sleep(DURATION);
-
-            if (hasResult[0])
-                startChat(client);
-            else
-                makeInitialConnection();
-            break;
+        if (username.equals("0")) {
+            makeInitialConnection();
+            return;
         }
+
+        if (username.isEmpty()) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
+                    "Please Try again." + RESET);
+            signUp();
+            return;
+        }
+
+        System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
+        password = new Scanner(System.in).nextLine();
+
+        if (password.equals("0")) {
+            makeInitialConnection();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Password.\n" +
+                    "Please Try again." + RESET);
+            signUp();
+            return;
+        }
+
+        final boolean[] hasResult = {false};
+        signHandler.signUp((result, message, data) -> {
+            System.out.println(message);
+            hasResult[0] = result;
+            client = data;
+        }, ClientModel.factory(username, password));
+
+        Thread.sleep(DURATION);
+
+        if (hasResult[0])
+            startChat(client);
+        else
+            makeInitialConnection();
     }
 
     private static void login() throws InterruptedException {
         String username;
         String password;
 
-        while (true) {
-            System.out.print(WHITE_BOLD_BRIGHT + "Username ('0' to return) : " + RESET);
-            username = new Scanner(System.in).nextLine().trim();
+        System.out.print(WHITE_BOLD_BRIGHT + "Username ('0' to return) : " + RESET);
+        username = new Scanner(System.in).nextLine().trim();
 
-            if (username.equals("0")) {
-                makeInitialConnection();
-                return;
-            }
-
-            System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
-            password = new Scanner(System.in).nextLine().trim();
-
-            if (password.equals("0")) {
-                makeInitialConnection();
-                return;
-            }
-
-            final boolean[] hasResult = {false};
-            signHandler.login((result, message, data) -> {
-                System.out.println(message);
-                hasResult[0] = result;
-                client = data;
-            }, username, password);
-
-            Thread.sleep(DURATION);
-
-            if (hasResult[0])
-                startChat(client);
-            else
-                makeInitialConnection();
-            break;
+        if (username.equals("0")) {
+            makeInitialConnection();
+            return;
         }
+
+        if (username.isEmpty()) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
+                    "Please Try again." + RESET);
+            login();
+            return;
+        }
+
+        System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
+        password = new Scanner(System.in).nextLine().trim();
+
+        if (password.equals("0")) {
+            makeInitialConnection();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
+                    "Please Try again." + RESET);
+            login();
+            return;
+        }
+
+        final boolean[] hasResult = {false};
+        signHandler.login((result, message, data) -> {
+            System.out.println(message);
+            hasResult[0] = result;
+            client = data;
+        }, username, password);
+
+        Thread.sleep(DURATION);
+
+        if (hasResult[0])
+            startChat(client);
+        else
+            makeInitialConnection();
     }
 
     private static void startChat(ClientModel clientModel) {
@@ -165,6 +185,9 @@ public class ChatClientCLI {
     public static void main(String[] args) {
         makeInitialConnection();
 
+        // TODO: The program's inability to close by itself
+        //  and the need for `System.exit(0)` could mean that
+        //  there are still unclosed threads somewhere.
         System.exit(0);
     }
 }
