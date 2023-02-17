@@ -11,7 +11,6 @@ import java.util.Locale;
 
 import static server.ChatClientHandler.getClientHandlers;
 
-// TODO: Ban Message is not saved in history
 public class ServerCommandBan {
     protected static ServerMessageModel banCommand(String[] commandTokens) {
         if (commandTokens.length == 2) {
@@ -64,13 +63,11 @@ public class ServerCommandBan {
             String unBannedUser = commandTokens[1];
             if (MyUsersFiles.contains(unBannedUser)) {
                 ClientModel unBannedClientModel = MyUsersFiles.getUserByName(unBannedUser);
-                ;
-                ;
 
                 if (unBannedClientModel != null && unBannedClientModel.isBanned()) {
                     // Just takes a random client to send the unbanned message to all clients
                     for (ChatClientHandler clientHandler : getClientHandlers()) {
-                        clientHandler.broadcastMessageToOthers(getUserUnBannedMsgToAll(unBannedClientModel));
+                        clientHandler.broadcastMessageToAll(getUserUnBannedMsgToAll(unBannedClientModel));
                         break;
                     }
 

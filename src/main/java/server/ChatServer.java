@@ -20,6 +20,7 @@ import static utils.ConsoleDetail.*;
 //       Sign-in, Login, New Message, Commands, Exits
 // TODO: Separate Server from Client
 // TODO: Fix spacing for '>'
+// TODO: Make some methods private
 
 public class ChatServer {
     private static ServerConfig config;
