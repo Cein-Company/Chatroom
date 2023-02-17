@@ -60,7 +60,7 @@ public class ChatClient {
                 System.out.print(client.getColoredUsername() + colon);
 
                 if (isServerOn && scanner.hasNext()) {
-                    String messageToSend = scanner.nextLine();
+                    String messageToSend = scanner.nextLine().trim();
 
                     if (messageToSend != null) {
                         if (messageToSend.equals(""))
@@ -143,7 +143,7 @@ public class ChatClient {
         while (true) {
             System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
 
-            String choice = new Scanner(System.in).nextLine();
+            String choice = new Scanner(System.in).nextLine().trim();
 
             switch (choice) {
                 case "1":

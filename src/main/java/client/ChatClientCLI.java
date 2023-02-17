@@ -9,8 +9,6 @@ import java.util.Scanner;
 
 import static utils.ConsoleDetail.*;
 
-// TODO: Client's chat enter message doesn't show for themself
-
 public class ChatClientCLI {
     private static SignInteractHandler signHandler;
     private static Socket serverSocket;
@@ -47,7 +45,7 @@ public class ChatClientCLI {
 
             System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
 
-            String choice = new Scanner(System.in).nextLine();
+            String choice = new Scanner(System.in).nextLine().trim();
 
             switch (choice) {
                 case "1" -> {
@@ -87,7 +85,7 @@ public class ChatClientCLI {
         }
 
         System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
-        password = new Scanner(System.in).nextLine();
+        password = new Scanner(System.in).nextLine().trim();
 
         if (password.equals("0")) {
             makeInitialConnection();

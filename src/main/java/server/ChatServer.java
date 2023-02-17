@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static server.ChatClientHandler.getClientHandlers;
@@ -40,7 +41,7 @@ public class ChatServer {
 
         System.out.println(RED_BOLD_BRIGHT + "SERVER CONNECTED!\n" +
                 "Type '/help' to see a list of available commands.\n" +
-                "Type '/exit' to close the server." + RESET);
+                "Type '/shutdown' to close the server." + RESET);
         listenForServerCommands();
 
         try {
@@ -65,7 +66,7 @@ public class ChatServer {
                 System.out.print("\n" + CYAN_BOLD_BRIGHT + ">" + RESET);
 
                 if (scanner.hasNext()) {
-                    scannedCommand = scanner.nextLine();
+                    scannedCommand = scanner.nextLine().trim();
 
                     ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommand);
 

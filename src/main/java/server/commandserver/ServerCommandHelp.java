@@ -27,8 +27,8 @@ public class ServerCommandHelp {
     protected static final String banDescription = WHITE_BOLD_BRIGHT + "To ban a user from entering the chatroom forever" + RESET;
     protected static final String unBanCmd = CYAN_BOLD_BRIGHT + "`/ban username -u`" + RESET;
     protected static final String unBanDescription = WHITE_BOLD_BRIGHT + "To unban a banned user" + RESET;
-    protected static final String exitCmd = CYAN_BOLD_BRIGHT + "`/exit`" + RESET;
-    protected static final String exitDescription = WHITE_BOLD_BRIGHT + "To close and exit the server" + RESET;
+    protected static final String shutdownCmd = CYAN_BOLD_BRIGHT + "`/shutdown`" + RESET;
+    protected static final String shutdownDescription = WHITE_BOLD_BRIGHT + "To close and shutdown the server" + RESET;
 
     public static ServerMessageModel helpCommand(String[] commandTokens) {
         if (commandTokens.length == 1) {
@@ -48,7 +48,7 @@ public class ServerCommandHelp {
                 + kickCmd + indicator + kickDescription + "\n"
                 + banCmd + indicator + banDescription + "\n"
                 + unBanCmd + indicator + unBanDescription + "\n"
-                + exitCmd + indicator + exitDescription;
+                + shutdownCmd + indicator + shutdownDescription;
     }
 
     private static ServerMessageModel getHelpList() {
