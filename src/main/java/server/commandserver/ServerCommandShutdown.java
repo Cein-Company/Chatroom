@@ -1,8 +1,8 @@
 package server.commandserver;
 
 import server.ChatServer;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import java.util.Locale;
 import java.util.Scanner;

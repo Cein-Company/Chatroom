@@ -10,8 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import server.commandclient.CommandHandlerClient;
 import server.entrance.EntranceHandler;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 import utils.ConsoleDetail;
 
 import java.io.IOException;

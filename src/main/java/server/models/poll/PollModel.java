@@ -1,11 +1,11 @@
-package common_models.poll;
+package server.models.poll;
 
 import java.io.Serializable;
 import java.util.*;
 
 import static utils.ConsoleDetail.*;
 
-// TODO: Move common_models.poll to models package
+// TODO: Move server.models.poll to models package
 
 public class PollModel implements Serializable {
 
@@ -14,7 +14,7 @@ public class PollModel implements Serializable {
     private final String title;
     private final List<PollOptionModel> options;
     private Map<UUID, Integer> votes;
-    private PollStatus status = PollStatus.Ongoing;
+    private PollStatus status = PollStatus.OnGoing;
 
     public PollModel(String title, List<PollOptionModel> options, String uniqueName) {
         this.title = title;

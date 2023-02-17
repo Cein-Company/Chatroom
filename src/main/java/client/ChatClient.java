@@ -3,8 +3,8 @@ package client;
 import client.models.ClientMessageModel;
 import client.models.ClientModel;
 import files.MyActiveUsersFiles;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,4 +1,4 @@
-package common_models.poll;
+package server.models.poll;
 
 import java.io.Serializable;
 import java.util.ArrayList;

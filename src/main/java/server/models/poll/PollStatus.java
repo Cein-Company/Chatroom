@@ -1,8 +1,8 @@
-package common_models.poll;
+package server.models.poll;
 
 import java.io.Serializable;
 
 public enum PollStatus implements Serializable {
-    Ongoing,
+    OnGoing,
     End
 }

@@ -5,8 +5,8 @@ import client.models.ClientMessageModel;
 import client.models.ClientModel;
 import org.json.JSONException;
 import org.json.JSONObject;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 import utils.InteractiveInterface;
 import utils.JsonRequestResponse;
 

@@ -1,11 +1,11 @@
 package server.commandserver;
 
-import common_models.poll.PollStatus;
+import server.models.poll.PollStatus;
 import files.MyPollsFile;
-import common_models.poll.PollModel;
-import common_models.poll.PollOptionModel;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.poll.PollModel;
+import server.models.poll.PollOptionModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import java.util.ArrayList;
 import java.util.List;

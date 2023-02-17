@@ -1,8 +1,7 @@
 package server.commandclient;
 
-import client.models.ClientMessageModel;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import static utils.ConsoleDetail.*;
 

@@ -1,4 +1,4 @@
-package server.models;
+package server.models.servermessage;
 
 import client.models.ClientMessageModel;
 import client.models.ClientModel;

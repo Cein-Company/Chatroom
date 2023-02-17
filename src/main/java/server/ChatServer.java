@@ -4,14 +4,13 @@ import files.*;
 import server.commandserver.CommandHandlerServer;
 import server.config.ServerConfig;
 import server.config.ServerMode;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
 
 import static server.ChatClientHandler.getClientHandlers;

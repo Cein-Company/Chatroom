@@ -1,10 +1,10 @@
 package server.commandclient;
 
 import client.models.ClientModel;
-import common_models.poll.PollModel;
+import server.models.poll.PollModel;
 import files.MyPollsFile;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 import java.util.ArrayList;
 

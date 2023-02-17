@@ -3,8 +3,8 @@ package server.commandclient;
 import client.models.ClientMessageModel;
 import client.models.ClientModel;
 import server.ChatClientHandler;
-import server.models.ServerMessageMode;
-import server.models.ServerMessageModel;
+import server.models.servermessage.ServerMessageMode;
+import server.models.servermessage.ServerMessageModel;
 
 
 public class ClientCommandExit {
