@@ -1,10 +1,8 @@
 package client.models;
 
 import java.io.Serializable;
-import java.util.Random;
 import java.util.UUID;
 
-import static utils.ConsoleDetail.BOLD_BRIGHTS_COLORS;
 import static utils.ConsoleDetail.RESET;
 
 public class ClientModel implements Serializable {
@@ -16,11 +14,11 @@ public class ClientModel implements Serializable {
 
     private boolean banned;
 
-    public ClientModel(String username, String password, UUID clientId) {
+    public ClientModel(String username, String password, UUID clientId, String CLIENT_COLOR) {
         this.username = username;
         this.password = password;
         this.clientId = clientId;
-        this.CLIENT_COLOR = BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
+        this.CLIENT_COLOR = CLIENT_COLOR;
         this.coloredUsername = CLIENT_COLOR + this.username + RESET;
         this.banned = false;
     }
@@ -46,10 +44,14 @@ public class ClientModel implements Serializable {
     }
 
     public static ClientModel factory(String username, String password) {
-        return new ClientModel(username, password, null);
+        return new ClientModel(username, password, null, "");
     }
 
     public UUID getClientId() {
         return clientId;
+    }
+
+    public String getCLIENT_COLOR() {
+        return CLIENT_COLOR;
     }
 }

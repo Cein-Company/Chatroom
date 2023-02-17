@@ -127,7 +127,6 @@ public class SignInteractHandler {
                 initialConnectionResponse = true;
 
                 listenForMessage();
-                // closeEverything();
                 break;
             } catch (IOException e) {
                 System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
@@ -163,20 +162,22 @@ public class SignInteractHandler {
         }
 
         listener = response -> {
-            // condition : SUCCESSFUL, ERROR, TAKEN,
+            // condition : SUCCESS, ERROR, TAKEN
             try {
                 boolean condition = response.getBoolean("condition");
-                String error = response.getString("content");
+                String content = response.getString("content");
                 ClientModel client = null;
 
                 if (condition) {
-                    JSONObject clientModel = response.getJSONObject("client");
-                    client = new ClientModel(clientModel.getString("username"),
-                            clientModel.getString("password"),
-                            UUID.fromString(clientModel.getString("id")));
+                    JSONObject clientModelJsonResponse = response.getJSONObject("client");
+                    client = new ClientModel(
+                            clientModelJsonResponse.getString("username"),
+                            clientModelJsonResponse.getString("password"),
+                            UUID.fromString(clientModelJsonResponse.getString("id")),
+                            clientModelJsonResponse.getString("CLIENT_COLOR"));
                 }
 
-                result.result(condition, error, client);
+                result.result(condition, content, client);
                 if (isServerOn)
                     closeEverything();
             } catch (JSONException e) {
@@ -194,17 +195,19 @@ public class SignInteractHandler {
             setUpSocket();
 
         listener = response -> {
-            // condition : SUCCESS, ERROR, TAKEN,
+            // condition : SUCCESS, ERROR, TAKEN
             try {
                 boolean condition = response.getBoolean("condition");
                 String content = response.getString("content");
                 ClientModel client = null;
 
                 if (condition) {
-                    JSONObject clientModel = response.getJSONObject("client");
-                    client = new ClientModel(clientModel.getString("username"),
-                            clientModel.getString("password"),
-                            UUID.fromString(clientModel.getString("id")));
+                    JSONObject clientModelJsonResponse = response.getJSONObject("client");
+                    client = new ClientModel(
+                            clientModelJsonResponse.getString("username"),
+                            clientModelJsonResponse.getString("password"),
+                            UUID.fromString(clientModelJsonResponse.getString("id")),
+                            clientModelJsonResponse.getString("CLIENT_COLOR"));
                 }
 
                 result.result(condition, content, client);

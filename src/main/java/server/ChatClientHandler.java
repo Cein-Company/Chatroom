@@ -12,6 +12,7 @@ import server.commandclient.CommandHandlerClient;
 import server.entrance.EntranceHandler;
 import server.models.ServerMessageMode;
 import server.models.ServerMessageModel;
+import utils.ConsoleDetail;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,10 +22,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static server.ChatServer.isServerOn;
-import static utils.ConsoleDetail.CYAN_BOLD_BRIGHT;
-import static utils.ConsoleDetail.RESET;
+import static utils.ConsoleDetail.*;
 
-// TODO: Client name color changes on each login
 public class ChatClientHandler implements Runnable {
     private static final ArrayList<ChatClientHandler> clientHandlers = new ArrayList<>();
 
@@ -128,13 +127,18 @@ public class ChatClientHandler implements Runnable {
                         clientModel = MyUsersFiles.getUserByName(clientModel.getUsername());
                     }
                     response.put("condition", true);
+
                     JSONObject clientJO = new JSONObject();
                     clientJO.put("username", clientModel.getUsername());
                     clientJO.put("password", clientModel.getPassword());
-                    if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN))
+                    if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN)) {
                         clientJO.put("id", UUID.randomUUID().toString());
-                    else
+                        clientJO.put("CLIENT_COLOR", ConsoleDetail.getRandomBBColor());
+                    } else {
                         clientJO.put("id", clientModel.getClientId().toString());
+                        clientJO.put("CLIENT_COLOR", clientModel.getCLIENT_COLOR());
+                    }
+
                     response.put("content", CYAN_BOLD_BRIGHT +
                             "Login successful. You can start chatting now.\n" + RESET);
                     response.put("client", clientJO);

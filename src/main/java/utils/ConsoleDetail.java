@@ -1,6 +1,7 @@
 package utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Random;
 
 // TODO: Check for un-bright colors
 public class ConsoleDetail {
@@ -84,6 +85,10 @@ public class ConsoleDetail {
             "\033[1;95m",  // PURPLE
             "\033[1;96m",  // CYAN
     };
+
+    public static String getRandomBBColor() {
+        return BOLD_BRIGHTS_COLORS[new Random().nextInt(BOLD_BRIGHTS_COLORS.length)];
+    }
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 }

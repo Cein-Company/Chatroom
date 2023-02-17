@@ -3,6 +3,7 @@ package server.entrance;
 import client.models.ClientModel;
 import files.MyActiveUsersFiles;
 import files.MyUsersFiles;
+import utils.ConsoleDetail;
 
 import java.util.UUID;
 
@@ -26,7 +27,11 @@ public class EntranceHandler {
         if (passwordResult != null)
             throw new Exception(passwordResult);
 
-        newClient = new ClientModel(newClient.getUsername(), newClient.getPassword(), UUID.randomUUID());
+        newClient = new ClientModel(
+                newClient.getUsername(),
+                newClient.getPassword(),
+                UUID.randomUUID(),
+                ConsoleDetail.getRandomBBColor());
         MyUsersFiles.save(newClient);
     }
 
