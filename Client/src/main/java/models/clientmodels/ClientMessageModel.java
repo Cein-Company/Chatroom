@@ -5,10 +5,7 @@ import java.util.Date;
 
 import static utils.ConsoleDetail.*;
 
-// TODO: ClientMessageModel's Generic Value Not Handled across Files
 public class ClientMessageModel implements Serializable {
-    //    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
-
     private final String message;
     private final String coloredMessage;
     private final ClientModel sender;

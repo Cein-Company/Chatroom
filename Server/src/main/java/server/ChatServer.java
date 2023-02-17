@@ -18,9 +18,7 @@ import static utils.ConsoleDetail.*;
 
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
 //       Sign-in, Login, New Message, Commands, Exits
-// TODO: Separate Server from Client
 // TODO: Fix spacing for '>'
-// TODO: Make some methods private
 
 public class ChatServer {
     private static ServerConfig config;
