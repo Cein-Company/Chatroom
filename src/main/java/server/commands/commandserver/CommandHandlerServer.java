@@ -1,14 +1,11 @@
-package server.commandserver;
+package server.commands.commandserver;
 
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.util.Locale;
 
 public class CommandHandlerServer {
-    private static final ServerMessageModel serverInvalidMsgModel =
-            new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Command.");
-
     public static ServerMessageModel commandHandler(String serverMessage) {
         String[] commandTokens = serverMessage.split("\\s+");
 
@@ -21,7 +18,12 @@ public class CommandHandlerServer {
             case "/message" -> ServerCommandMessage.messageCommand(commandTokens);
             case "/poll" -> ServerCommandPoll.messageCommand(commandTokens);
             case "/shutdown" -> ServerCommandShutdown.closeCommand();
-            default -> serverInvalidMsgModel;
+            default -> getServerInvalidMsgModel();
         };
+    }
+
+
+    private static ServerMessageModel getServerInvalidMsgModel() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Command.");
     }
 }

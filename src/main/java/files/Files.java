@@ -1,8 +1,8 @@
 package files;
 
-import client.models.ClientModel;
-import server.models.poll.PollModel;
-import server.models.servermessage.ServerMessageModel;
+import models.clientmodels.ClientModel;
+import models.poll.PollModel;
+import models.servermessage.ServerMessageModel;
 
 import java.io.File;
 import java.nio.file.Path;

@@ -1,6 +1,6 @@
 package server.entrance;
 
-import client.models.ClientModel;
+import models.clientmodels.ClientModel;
 import files.MyActiveUsersFiles;
 import files.MyUsersFiles;
 import utils.ConsoleDetail;
@@ -35,7 +35,7 @@ public class EntranceHandler {
         MyUsersFiles.save(newClient);
     }
 
-    public static boolean login(ClientModel client) throws Exception {
+    public static void login(ClientModel client) throws Exception {
         String result = null;
         if (!MyUsersFiles.contains(client.getUsername())) {
             result = NO_SUCH_CLIENT;
@@ -48,7 +48,6 @@ public class EntranceHandler {
         }
         if (result != null)
             throw new Exception(result);
-        return true;
     }
 
     private static String checkUsername(String username) {

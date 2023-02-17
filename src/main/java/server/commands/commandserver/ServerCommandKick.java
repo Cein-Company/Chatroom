@@ -1,11 +1,11 @@
-package server.commandserver;
+package server.commands.commandserver;
 
-import client.models.ClientModel;
+import models.clientmodels.ClientModel;
 import files.MyActiveUsersFiles;
 import files.MyUsersFiles;
 import server.ChatClientHandler;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.util.ArrayList;
 

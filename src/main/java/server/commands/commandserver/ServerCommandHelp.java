@@ -1,7 +1,7 @@
-package server.commandserver;
+package server.commands.commandserver;
 
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import static utils.ConsoleDetail.*;
 

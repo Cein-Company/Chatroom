@@ -1,11 +1,11 @@
-package server.commandclient;
+package server.commands.commandclient;
 
-import client.models.ClientMessageModel;
-import client.models.ClientModel;
+import models.clientmodels.ClientMessageModel;
+import models.clientmodels.ClientModel;
 import files.MyActiveUsersFiles;
 import files.MyUsersFiles;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.util.Arrays;
 import java.util.Locale;

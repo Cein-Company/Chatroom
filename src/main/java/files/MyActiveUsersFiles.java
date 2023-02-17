@@ -1,14 +1,12 @@
 package files;
 
-import client.models.ClientModel;
+import models.clientmodels.ClientModel;
 import utils.ArraysHelper;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class MyActiveUsersFiles extends Files {

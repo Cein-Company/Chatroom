@@ -1,6 +1,6 @@
 package files;
 
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageModel;
 import utils.ArraysHelper;
 
 import java.io.*;

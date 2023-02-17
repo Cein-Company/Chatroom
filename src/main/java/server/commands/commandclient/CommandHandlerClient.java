@@ -1,9 +1,9 @@
-package server.commandclient;
+package server.commands.commandclient;
 
-import client.models.ClientMessageModel;
+import models.clientmodels.ClientMessageModel;
 import server.ChatClientHandler;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.util.Locale;
 

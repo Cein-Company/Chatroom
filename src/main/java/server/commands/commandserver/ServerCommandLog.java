@@ -1,8 +1,8 @@
-package server.commandserver;
+package server.commands.commandserver;
 
 import files.MyMessagesFiles;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 import utils.ArraysHelper;
 
 import java.io.BufferedWriter;

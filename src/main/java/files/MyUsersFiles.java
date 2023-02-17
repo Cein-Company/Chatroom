@@ -1,6 +1,6 @@
 package files;
 
-import client.models.ClientModel;
+import models.clientmodels.ClientModel;
 import utils.ArraysHelper;
 
 import java.io.*;

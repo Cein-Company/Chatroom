@@ -1,15 +1,12 @@
-package client.models;
+package models.clientmodels;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import static utils.ConsoleDetail.*;
 
 // TODO: ClientMessageModel's Generic Value Not Handled across Files
-public class ClientMessageModel <T> implements Serializable {
+public class ClientMessageModel implements Serializable {
     //    private static final Map<UUID, ClientMessageModel> clientMessageMap = new HashMap<>();
 
     private final String message;
@@ -18,7 +15,7 @@ public class ClientMessageModel <T> implements Serializable {
     private String receiver;
     private final String messageTime;
     private final String messageTimeColored;
-    T data;
+    private ClientModel requestingClient;
     private final boolean isCommand;
     private final boolean isExitCommand;
     private ClientMessageMode mode;
@@ -46,7 +43,7 @@ public class ClientMessageModel <T> implements Serializable {
         this.mode = messageMode;
     }
 
-    public ClientMessageModel(ClientMessageMode messageMode, T data) {
+    public ClientMessageModel(ClientMessageMode messageMode, ClientModel requestingClient) {
         this.message = null;
         this.coloredMessage = null;
         this.sender = null;
@@ -54,7 +51,7 @@ public class ClientMessageModel <T> implements Serializable {
         this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
         this.isCommand = false;
         this.isExitCommand = false;
-        this.data = data;
+        this.requestingClient = requestingClient;
         this.mode = messageMode;
     }
 
@@ -105,7 +102,7 @@ public class ClientMessageModel <T> implements Serializable {
         return mode;
     }
 
-    public T getData() {
-        return data;
+    public ClientModel getRequestingClient() {
+        return requestingClient;
     }
 }

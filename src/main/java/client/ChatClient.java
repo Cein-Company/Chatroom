@@ -1,10 +1,9 @@
 package client;
 
-import client.models.ClientMessageModel;
-import client.models.ClientModel;
-import files.MyActiveUsersFiles;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.clientmodels.ClientMessageModel;
+import models.clientmodels.ClientModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,19 +61,17 @@ public class ChatClient {
                 if (isServerOn && scanner.hasNext()) {
                     String messageToSend = scanner.nextLine().trim();
 
-                    if (messageToSend != null) {
-                        if (messageToSend.equals(""))
-                            continue;
+                    if (messageToSend.equals(""))
+                        continue;
 
-                        ClientMessageModel message = new ClientMessageModel(client, messageToSend);
+                    ClientMessageModel message = new ClientMessageModel(client, messageToSend);
 
-                        System.out.println(message.getFullMessage());
-                        writeWithObjectOutput(message);
+                    System.out.println(message.getFullMessage());
+                    writeWithObjectOutput(message);
 
-                        if (message.getMessage().toLowerCase(Locale.ROOT).equals("/exit")) {
-                            clientLeaving();
-                            break;
-                        }
+                    if (message.getMessage().toLowerCase(Locale.ROOT).equals("/exit")) {
+                        clientLeaving();
+                        break;
                     }
                 }
             }
@@ -130,7 +127,7 @@ public class ChatClient {
         }).start();
     }
 
-    public void clientLeaving() throws IOException {
+    private void clientLeaving() throws IOException {
         closeEverything();
 
         System.out.println("""
@@ -166,8 +163,7 @@ public class ChatClient {
         objectOutputStream.flush();
     }
 
-    public void closeEverything() {
-        MyActiveUsersFiles.remove(client.getUsername());
+    private void closeEverything() {
         chatClients.remove(this);
 
         try {
@@ -184,13 +180,5 @@ public class ChatClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public ClientModel getClient() {
-        return client;
-    }
-
-    public static ArrayList<ChatClient> getChatClients() {
-        return chatClients;
     }
 }

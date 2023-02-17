@@ -1,10 +1,10 @@
-package server.commandclient;
+package server.commands.commandclient;
 
-import client.models.ClientMessageModel;
-import client.models.ClientModel;
+import models.clientmodels.ClientMessageModel;
+import models.clientmodels.ClientModel;
 import server.ChatClientHandler;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 
 public class ClientCommandExit {
@@ -13,7 +13,6 @@ public class ClientCommandExit {
             ClientModel leavingClient = clientMessage.getSender();
 
             chatClientHandler.sendMessageToClient(getLeavingMsg());
-            chatClientHandler.broadcastMessageToOthers(getLeftMessageToAll(leavingClient));
 
             chatClientHandler.closeEverything();
 

@@ -1,17 +1,17 @@
 package server;
 
-import client.models.ClientMessageMode;
-import client.models.ClientMessageModel;
-import client.models.ClientModel;
+import models.clientmodels.ClientMessageMode;
+import models.clientmodels.ClientMessageModel;
+import models.clientmodels.ClientModel;
 import files.MyActiveUsersFiles;
 import files.MyMessagesFiles;
 import files.MyUsersFiles;
 import org.json.JSONException;
 import org.json.JSONObject;
-import server.commandclient.CommandHandlerClient;
+import server.commands.commandclient.CommandHandlerClient;
 import server.entrance.EntranceHandler;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 import utils.ConsoleDetail;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class ChatClientHandler implements Runnable {
                         broadcastMessageToAll(enteredChatMsg);
                     }
 
-                    if (obj instanceof ClientMessageModel<?>) {
+                    if (obj instanceof ClientMessageModel) {
                         clientMessage = (ClientMessageModel) obj;
 
                         if (clientMessage.getMode().equals(ClientMessageMode.INITIAL_CONNECTION)) {
@@ -115,9 +115,9 @@ public class ChatClientHandler implements Runnable {
         JSONObject response = new JSONObject();
         ServerMessageModel serverMessageModel = null;
 
-        if (clientMessage.getData() != null &&
-                clientMessage.getData() instanceof ClientModel) {
-            ClientModel clientModel = (ClientModel) clientMessage.getData();
+        if (clientMessage.getRequestingClient() != null) {
+            ClientModel clientModel = clientMessage.getRequestingClient();
+
             try {
                 try {
                     if (clientMessage.getMode().equals(ClientMessageMode.SIGNING_IN))
@@ -157,7 +157,7 @@ public class ChatClientHandler implements Runnable {
         return serverMessageModel;
     }
 
-    public void messageHandling(ServerMessageModel serverMessage) {
+    private void messageHandling(ServerMessageModel serverMessage) {
         switch (serverMessage.getMessageMode()) {
             case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
             case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
@@ -204,7 +204,7 @@ public class ChatClientHandler implements Runnable {
 
     public void messagingAClient(ServerMessageModel serverMsgModelToSend) {
         for (ChatClientHandler clientHandler : clientHandlers) {
-            if (clientHandler.getClientUsername().equals(serverMsgModelToSend.getClientModelReceiver().getUsername())) {
+            if (clientHandler.clientUsername.equals(serverMsgModelToSend.getClientModelReceiver().getUsername())) {
                 clientHandler.sendMessageToClient(serverMsgModelToSend);
                 break;
             }
@@ -220,6 +220,7 @@ public class ChatClientHandler implements Runnable {
     }
 
     public void closeEverything() {
+        MyActiveUsersFiles.remove(this.clientUsername);
         clientHandlers.remove(this);
 
         if (!isServerOn()) {

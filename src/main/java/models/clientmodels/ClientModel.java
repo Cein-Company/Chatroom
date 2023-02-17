@@ -1,4 +1,4 @@
-package client.models;
+package models.clientmodels;
 
 import java.io.Serializable;
 import java.util.UUID;

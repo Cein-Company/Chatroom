@@ -1,7 +1,7 @@
-package server.models.servermessage;
+package models.servermessage;
 
-import client.models.ClientMessageModel;
-import client.models.ClientModel;
+import models.clientmodels.ClientMessageModel;
+import models.clientmodels.ClientModel;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,11 +1,11 @@
 package server;
 
 import files.*;
-import server.commandserver.CommandHandlerServer;
+import server.commands.commandserver.CommandHandlerServer;
 import server.config.ServerConfig;
 import server.config.ServerMode;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -31,7 +31,11 @@ public class ChatServer {
     private static final int MAX_PORTS_RANGE = 65536;
     private static final int MIN_PORTS_RANGE = 0;
 
-    public static void startServer() {
+    public static boolean isServerOn() {
+        return serverOn;
+    }
+
+    private static void startServer() {
         serverOn = true;
 
         ServerMessageModel turnOnMsg =
@@ -56,7 +60,7 @@ public class ChatServer {
         }
     }
 
-    public static void listenForServerCommands() {
+    private static void listenForServerCommands() {
         new Thread(() -> {
             String scannedCommand;
             Scanner scanner = new Scanner(System.in);
@@ -77,13 +81,16 @@ public class ChatServer {
                     } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ToAdminister) ||
                             commandRespond.getMessageMode().equals(ServerMessageMode.ListFromServer)) {
                         System.out.println(commandRespond.getFullMessage());
+                    } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
+                        ChatServer.closeServerSocket();
+                        System.out.println(commandRespond.getFullMessage());
                     }
                 }
             }
         }).start();
     }
 
-    public static void closeServerSocket() {
+    private static void closeServerSocket() {
         serverOn = false;
 
         ServerMessageModel shutdownMsg =
@@ -103,10 +110,6 @@ public class ChatServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean isServerOn() {
-        return serverOn;
     }
 
     private static void configServer() {

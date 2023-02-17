@@ -1,7 +1,7 @@
 package files;
 
-import server.models.poll.PollModel;
-import server.models.poll.PollStatus;
+import models.poll.PollModel;
+import models.poll.PollStatus;
 import utils.ArraysHelper;
 
 import java.io.*;

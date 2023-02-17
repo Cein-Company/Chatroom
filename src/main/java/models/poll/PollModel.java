@@ -1,11 +1,9 @@
-package server.models.poll;
+package models.poll;
 
 import java.io.Serializable;
 import java.util.*;
 
 import static utils.ConsoleDetail.*;
-
-// TODO: Move server.models.poll to models package
 
 public class PollModel implements Serializable {
 

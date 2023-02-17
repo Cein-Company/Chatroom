@@ -1,6 +1,6 @@
 package client;
 
-import client.models.ClientModel;
+import models.clientmodels.ClientModel;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,7 +32,7 @@ public class ChatClientCLI {
         }
     }
 
-    public static void startMenu() throws InterruptedException {
+    private static void startMenu() throws InterruptedException {
         while (true) {
             System.out.println(
                     """

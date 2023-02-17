@@ -1,11 +1,11 @@
-package server.commandserver;
+package server.commands.commandserver;
 
-import server.models.poll.PollStatus;
+import models.poll.PollStatus;
 import files.MyPollsFile;
-import server.models.poll.PollModel;
-import server.models.poll.PollOptionModel;
-import server.models.servermessage.ServerMessageMode;
-import server.models.servermessage.ServerMessageModel;
+import models.poll.PollModel;
+import models.poll.PollOptionModel;
+import models.servermessage.ServerMessageMode;
+import models.servermessage.ServerMessageModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import java.util.List;
 import static utils.ConsoleDetail.*;
 
 public class ServerCommandPoll {
-
     protected static ServerMessageModel messageCommand(String[] commandTokens) {
         try {
             switch (commandTokens[1].replaceFirst("-", "")) {
@@ -103,5 +102,4 @@ public class ServerCommandPoll {
             return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Use command correctly !" + RESET);
         }
     }
-
 }
