@@ -61,7 +61,7 @@ public class ChatClientCLI {
                     return;
                 }
                 case "3" -> {
-                    System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom." + RESET);
+                    System.out.print(RED_BOLD_BRIGHT + "You have left the chatroom.\nGoodbye." + RESET);
                     return;
                 }
                 default -> System.out.println(RED_BOLD_BRIGHT + "Please choose correctly." + RESET);
@@ -164,5 +164,7 @@ public class ChatClientCLI {
 
     public static void main(String[] args) {
         makeInitialConnection();
+
+        System.exit(0);
     }
 }

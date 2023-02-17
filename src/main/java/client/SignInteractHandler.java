@@ -106,9 +106,6 @@ public class SignInteractHandler {
 
             if (inputStream != null)
                 inputStream.close();
-
-            if (!isServerOn)
-                System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
         }

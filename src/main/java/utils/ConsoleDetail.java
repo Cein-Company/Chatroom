@@ -2,6 +2,7 @@ package utils;
 
 import java.text.SimpleDateFormat;
 
+// TODO: Check for un-bright colors
 public class ConsoleDetail {
     // Reset
     public static final String RESET = "\033[0m";  // Text Reset
