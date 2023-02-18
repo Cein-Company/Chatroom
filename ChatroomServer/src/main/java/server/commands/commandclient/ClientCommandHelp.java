@@ -39,6 +39,6 @@ public class ClientCommandHelp {
     }
 
     private static ServerMessageModel getInvalidHelpCommandMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "Please Use the /help command correctly.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "Please Use the /help command correctly.");
     }
 }

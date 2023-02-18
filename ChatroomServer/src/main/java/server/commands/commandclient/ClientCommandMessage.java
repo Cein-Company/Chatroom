@@ -54,14 +54,14 @@ public class ClientCommandMessage {
     }
 
     private static ServerMessageModel getCantPMYourselfMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "You can't send a private message to yourself.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "You can't send a private message to yourself.");
     }
 
     private static ServerMessageModel getUserNotFoundMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "No such user was found in the server.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "No such user was found in the server.");
     }
 
     private static ServerMessageModel getInvalidMessageCommand() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "Please Use the /message command correctly.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "Please Use the /message command correctly.");
     }
 }

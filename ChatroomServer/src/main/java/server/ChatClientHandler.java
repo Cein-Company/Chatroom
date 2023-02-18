@@ -89,16 +89,16 @@ public class ChatClientHandler implements Runnable {
                             }
                         }
 
-                        if (clientMessage.getMode() == ClientMessageMode.MESSAGE) {
+                        if (clientMessage.getMode().equals(ClientMessageMode.MESSAGE)) {
                             if (clientMessage.isCommand()) {
                                 ServerMessageModel commandRespond =
                                         CommandHandlerClient.commandHandler(this, clientMessage);
                                 messageHandling(commandRespond);
                             } else {
-                                ServerMessageModel serverMessageModel =
+                                ServerMessageModel clientMessageToBeSent =
                                         new ServerMessageModel(ServerMessageMode.FromClient, clientMessage);
 
-                                messageHandling(serverMessageModel);
+                                messageHandling(clientMessageToBeSent);
                             }
                         }
                     }
@@ -161,19 +161,19 @@ public class ChatClientHandler implements Runnable {
         return serverMessageModel;
     }
 
-    private void messageHandling(ServerMessageModel serverMessage) {
-        switch (serverMessage.getMessageMode()) {
-            case FromClient, FromServerAboutClient -> broadcastMessageToOthers(serverMessage);
-            case FromSerer, ListFromServer, SignInteract -> sendMessageToClient(serverMessage);
+    private void messageHandling(ServerMessageModel message) {
+        switch (message.getMessageMode()) {
+            case FromClient -> broadcastMessageToAll(message);
+            case FromServerAboutClient -> broadcastMessageToOthers(message);
+            case FromServer, ListFromServer, SignInteract -> sendMessageToClient(message);
             case PMFromClientToServer -> {
                 clearInputSymbol();
-                System.out.println(serverMessage.getFullMessage());
+                System.out.println(message.getFullMessage());
             }
-            case PMFromClientToClient -> messagingAClient(serverMessage);
-            case ServerShutdownMsg -> closeEverything();
+            case PMFromClientToClient -> messagingAClient(message);
             default -> {
                 System.out.println("I heard a roar in ChatClientHandler Class!");
-                System.out.println("-> " + serverMessage + " -> " + serverMessage.getMessageMode());
+                System.out.println("-> " + message + " -> " + message.getMessageMode());
             }
         }
     }

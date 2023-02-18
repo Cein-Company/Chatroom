@@ -56,7 +56,7 @@ public class ClientMessageModel implements Serializable {
         final String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
-        return messageTime + indicator + sender.getColoredUsername() + colon + coloredMessage;
+        return messageTimeColored + indicator + sender.getColoredUsername() + colon + coloredMessage;
     }
 
     public String getMessage() {

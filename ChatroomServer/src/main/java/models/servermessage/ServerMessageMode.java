@@ -5,7 +5,8 @@ import java.io.Serializable;
 public enum ServerMessageMode implements Serializable {
     ServerShutdownMsg,
     ServerKickMsg,
-    FromSerer,
+    GoodbyeFromServer,
+    FromServer,
     FromServerAboutClient,
     FromClient,
     ToAdminister,

@@ -19,7 +19,7 @@ public class ChatClient {
     private static final ArrayList<ChatClient> chatClients = new ArrayList<>();
 
     private Socket socket;
-    private ClientModel client;
+    private ClientModel clientModel;
 
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
@@ -27,10 +27,10 @@ public class ChatClient {
     private boolean isServerOn;
     private boolean isKicked;
 
-    public ChatClient(Socket socket, ClientModel client) {
+    public ChatClient(Socket socket, ClientModel clientModel) {
         try {
             this.socket = socket;
-            this.client = client;
+            this.clientModel = clientModel;
 
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -39,6 +39,9 @@ public class ChatClient {
             this.isKicked = false;
 
             chatClients.add(this);
+
+            objectOutputStream.writeObject(clientModel);
+            objectOutputStream.flush();
         } catch (IOException e) {
             closeEverything();
         }
@@ -48,29 +51,25 @@ public class ChatClient {
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
 
         try {
-            objectOutputStream.writeObject(client);
-            objectOutputStream.flush();
-
             Scanner scanner = new Scanner(System.in);
             while (isServerOn && socket.isConnected()) {
                 if (!isServerOn)
                     break;
 
-                System.out.print(client.getColoredUsername() + colon);
+                System.out.print(clientModel.getColoredUsername() + colon);
 
                 if (isServerOn && scanner.hasNext()) {
                     String messageToSend = scanner.nextLine().trim();
 
+                    // FIXME: Empty messages don't work correctly
                     if (messageToSend.equals(""))
                         continue;
 
-                    ClientMessageModel message = new ClientMessageModel(client, messageToSend);
+                    ClientMessageModel message = new ClientMessageModel(clientModel, messageToSend);
 
-                    System.out.println(message.getFullMessage());
                     writeWithObjectOutput(message);
 
                     if (message.getMessage().toLowerCase(Locale.ROOT).equals("/exit")) {
-                        clientLeaving();
                         break;
                     }
                 }
@@ -93,12 +92,13 @@ public class ChatClient {
                         messageFromChat = (ServerMessageModel) objectInputStream.readObject();
 
                         if (messageFromChat != null) {
-                            for (int i = 0; i < client.getUsername().length() + 2; i++)
+                            for (int i = 0; i < clientModel.getUsername().length() + 2; i++)
                                 System.out.print("\b");
+
+                            System.out.println(messageFromChat.getFullMessage());
 
                             if (messageFromChat.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
                                 isServerOn = false;
-                                System.out.println(messageFromChat.getFullMessage());
 
                                 closeEverything();
                                 break;
@@ -107,13 +107,16 @@ public class ChatClient {
                             if (messageFromChat.getMessageMode().equals(ServerMessageMode.ServerKickMsg)) {
                                 isKicked = true;
 
-                                System.out.println(messageFromChat.getFullMessage());
                                 closeEverything();
                                 break;
                             }
 
-                            System.out.println(messageFromChat.getFullMessage());
-                            System.out.print(client.getColoredUsername() + colon);
+                            if (messageFromChat.getMessageMode().equals(ServerMessageMode.GoodbyeFromServer)) {
+                                clientLeaving();
+                                break;
+                            }
+
+                            System.out.print(clientModel.getColoredUsername() + colon);
                         }
                     }
                 } catch (IOException e) {

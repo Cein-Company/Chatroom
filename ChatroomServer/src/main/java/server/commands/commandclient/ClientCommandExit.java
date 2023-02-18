@@ -22,7 +22,7 @@ public class ClientCommandExit {
     }
 
     private static ServerMessageModel getLeavingMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "You have left the chatroom. Goodbye.");
+        return new ServerMessageModel(ServerMessageMode.GoodbyeFromServer, "You have left the chatroom. Goodbye.");
     }
 
     private static ServerMessageModel getLeftMessageToAll(ClientModel leavingClient) {
@@ -30,6 +30,6 @@ public class ClientCommandExit {
     }
 
     private static ServerMessageModel getInvalidExitCommandMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "Please Use the /exit command correctly.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "Please Use the /exit command correctly.");
     }
 }

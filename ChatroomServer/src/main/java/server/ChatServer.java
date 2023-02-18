@@ -36,7 +36,7 @@ public class ChatServer {
         serverOn = true;
 
         ServerMessageModel turnOnMsg =
-                new ServerMessageModel(ServerMessageMode.FromSerer, "THE ADMINISTRATOR OPENED THE SERVER.");
+                new ServerMessageModel(ServerMessageMode.FromServer, "THE ADMINISTRATOR OPENED THE SERVER.");
         MyMessagesFiles.save(turnOnMsg);
 
         System.out.println(RED_BOLD_BRIGHT + """

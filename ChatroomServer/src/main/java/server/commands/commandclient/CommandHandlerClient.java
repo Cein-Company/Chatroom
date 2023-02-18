@@ -21,6 +21,6 @@ public class CommandHandlerClient {
     }
 
     private static ServerMessageModel getInvalidCommandMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromSerer, "Invalid Command.");
+        return new ServerMessageModel(ServerMessageMode.FromServer, "Invalid Command.");
     }
 }

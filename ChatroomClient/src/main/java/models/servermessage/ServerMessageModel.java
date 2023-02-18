@@ -95,7 +95,7 @@ public class ServerMessageModel implements Serializable {
         final String PrivateAnnouncement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
 
         switch (messageMode) {
-            case FromSerer, ServerShutdownMsg, ServerKickMsg -> {
+            case FromServer, ServerShutdownMsg, ServerKickMsg, GoodbyeFromServer -> {
                 return messageTimeColored + indicator + serverSender + colon + coloredMessage;
             }
             case FromServerAboutClient -> {
@@ -137,7 +137,7 @@ public class ServerMessageModel implements Serializable {
 
 
         switch (messageMode) {
-            case FromSerer -> {
+            case FromServer -> {
                 return messageTime + indicator + serverSender + colon + message;
             }
             case FromServerAboutClient -> {
