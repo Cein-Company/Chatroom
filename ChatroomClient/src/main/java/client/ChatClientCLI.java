@@ -5,6 +5,7 @@ import models.clientmodels.ClientModel;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static utils.ConsoleDetail.*;
@@ -83,6 +84,20 @@ public class ChatClientCLI {
             signUp();
             return;
         }
+
+        if (username.toLowerCase(Locale.ROOT).equals("all")) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty 'all' as Username.\n" +
+                    "Please Try again." + RESET);
+            signUp();
+            return;
+        }
+
+        if (username.contains(" ")) {
+            System.out.println(RED_BOLD_BRIGHT + "Please use a valid username with no spaces." + RESET);
+            signUp();
+            return;
+        }
+
 
         System.out.print(WHITE_BOLD_BRIGHT + "Password ('0' to return) : " + RESET);
         password = new Scanner(System.in).nextLine().trim();

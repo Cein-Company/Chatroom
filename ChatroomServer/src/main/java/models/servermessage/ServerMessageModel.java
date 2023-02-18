@@ -30,7 +30,8 @@ public class ServerMessageModel implements Serializable {
             this.message = message;
             if (messageMode.equals(ServerMessageMode.PMFromClientToClient) ||
                     messageMode.equals(ServerMessageMode.PMFromClientToServer) ||
-                    messageMode.equals(ServerMessageMode.PMFromServerToClient)) {
+                    messageMode.equals(ServerMessageMode.PMFromServerToClient) ||
+                    messageMode.equals(ServerMessageMode.FromServerAdmin)) {
                 this.coloredMessage = CYAN_BOLD_BRIGHT + this.message + RESET;
             } else {
                 this.coloredMessage = RED_BOLD_BRIGHT + this.message + RESET;
@@ -124,6 +125,9 @@ public class ServerMessageModel implements Serializable {
             }
             case PMFromServerToClient -> {
                 return messageTimeColored + indicator + PMAnnouncement + serverAdminSender + colon + coloredMessage;
+            }
+            case FromServerAdmin -> {
+                return messageTimeColored + indicator + serverAdminSender + colon + coloredMessage;
             }
             case ListFromServer, SignInteract -> {
                 return message;

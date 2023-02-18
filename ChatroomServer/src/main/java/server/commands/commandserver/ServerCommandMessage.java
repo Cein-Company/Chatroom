@@ -7,6 +7,7 @@ import models.servermessage.ServerMessageMode;
 import models.servermessage.ServerMessageModel;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static utils.ConsoleDetail.RED_BOLD_BRIGHT;
 import static utils.ConsoleDetail.RESET;
@@ -15,12 +16,18 @@ public class ServerCommandMessage {
     protected static ServerMessageModel messageCommand(String[] commandTokens) {
         if (commandTokens.length >= 3 && commandTokens[2].startsWith("'") && commandTokens[commandTokens.length - 1].endsWith("'")) {
             String receiver = commandTokens[1];
+            String message = join(commandTokens, commandTokens[2]);
 
-            if (MyActiveUsersFiles.contains(receiver)) {
-                String message = join(commandTokens, commandTokens[2]);
+            if (receiver.toLowerCase(Locale.ROOT).equals("all")) {
+                if (MyActiveUsersFiles.getAllActiveUsersDuplicate().isEmpty())
+                    return getNoOnlineUsersMsg();
 
+                return getMsgToAllFromAdmin(message);
+            }
+
+            if (MyActiveUsersFiles.contains(receiver))
                 return getPMFromServer(MyUsersFiles.getUserByName(receiver), message);
-            } else if (MyUsersFiles.contains(receiver))
+            else if (MyUsersFiles.contains(receiver))
                 return getNotOnlineMsg(MyUsersFiles.getUserByName(receiver));
             else
                 return getUserNotFoundMsg();
@@ -35,6 +42,15 @@ public class ServerCommandMessage {
                         tokens,
                         Arrays.asList(tokens).indexOf(from),
                         tokens.length));
+    }
+
+    private static ServerMessageModel getMsgToAllFromAdmin(String message) {
+        return new ServerMessageModel(ServerMessageMode.FromServerAdmin, message);
+    }
+
+    private static ServerMessageModel getNoOnlineUsersMsg() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister,
+                RED_BOLD_BRIGHT + "There are no online users in the Chatroom." + RESET);
     }
 
     private static ServerMessageModel getPMFromServer(ClientModel receiver, String message) {
