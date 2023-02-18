@@ -49,6 +49,7 @@ public class ChatClient {
 
     public void sendMessage() {
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
+        String messageToSend = null;
 
         try {
             Scanner scanner = new Scanner(System.in);
@@ -56,12 +57,13 @@ public class ChatClient {
                 if (!isServerOn)
                     break;
 
-                System.out.print(clientModel.getColoredUsername() + colon);
+                if (messageToSend == null || !messageToSend.isEmpty()){
+                    System.out.print(clientModel.getColoredUsername() + colon);
+                }
 
                 if (isServerOn && scanner.hasNext()) {
-                    String messageToSend = scanner.nextLine().trim();
+                    messageToSend = scanner.nextLine().trim();
 
-                    // FIXME: Empty messages don't work correctly
                     if (messageToSend.equals(""))
                         continue;
 
