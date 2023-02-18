@@ -19,6 +19,8 @@ import static utils.ConsoleDetail.*;
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
 //       Sign-in, Login, New Message, Commands, Exits
 
+// TODO: Message Object system is confusing and ugly code.
+//  Needs to be rebuilt.
 public class ChatServer {
     private static ServerConfig config;
     private static ServerSocket serverSocket;
@@ -72,17 +74,17 @@ public class ChatServer {
 
                     ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommand);
 
+                    System.out.println(commandRespond.getFullMessage());
+
                     if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromServerToClient)) {
                         for (ChatClientHandler clientHandler : getClientHandlers()) {
-                            clientHandler.messagingAClient(commandRespond);
-                            break;
+                            if (clientHandler.getClientUsername().equals(commandRespond.getClientModelReceiver().getUsername())) {
+                                clientHandler.sendMessageToClient(commandRespond);
+                                break;
+                            }
                         }
-                    } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ToAdminister) ||
-                            commandRespond.getMessageMode().equals(ServerMessageMode.ListFromServer)) {
-                        System.out.println(commandRespond.getFullMessage());
                     } else if (commandRespond.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
                         ChatServer.closeServerSocket();
-                        System.out.println(commandRespond.getFullMessage());
                     }
                 }
             }

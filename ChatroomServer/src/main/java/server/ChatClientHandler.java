@@ -35,6 +35,8 @@ public class ChatClientHandler implements Runnable {
     private ClientModel clientModel;
     private String clientUsername;
 
+    private boolean symbolShown = true;
+
     public ChatClientHandler(Socket socket) {
         try {
             this.socket = socket;
@@ -165,7 +167,8 @@ public class ChatClientHandler implements Runnable {
         switch (message.getMessageMode()) {
             case FromClient -> broadcastMessageToAll(message);
             case FromServerAboutClient -> broadcastMessageToOthers(message);
-            case FromServer, ListFromServer, SignInteract -> sendMessageToClient(message);
+            case FromServer, ListFromServer, SignInteract,
+                    FromServerToClient, PMFromServerToClient -> sendMessageToClient(message);
             case PMFromClientToServer -> {
                 clearInputSymbol();
                 System.out.println(message.getFullMessage());
@@ -178,30 +181,30 @@ public class ChatClientHandler implements Runnable {
         }
     }
 
-    public void broadcastMessageToAll(ServerMessageModel serverMsgModelToSend) {
+    public void broadcastMessageToAll(ServerMessageModel messageToSend) {
         clearInputSymbol();
-        System.out.println(serverMsgModelToSend.getFullMessage());
-        MyMessagesFiles.save(serverMsgModelToSend);
+        System.out.println(messageToSend.getFullMessage());
+        MyMessagesFiles.save(messageToSend);
 
         for (ChatClientHandler clientHandler : clientHandlers)
-            clientHandler.sendMessageToClient(serverMsgModelToSend);
+            clientHandler.sendMessageToClient(messageToSend);
     }
 
-    public void broadcastMessageToOthers(ServerMessageModel serverMsgModelToSend) {
+    public void broadcastMessageToOthers(ServerMessageModel messageToSend) {
         clearInputSymbol();
-        System.out.println(serverMsgModelToSend.getFullMessage());
-        MyMessagesFiles.save(serverMsgModelToSend);
+        System.out.println(messageToSend.getFullMessage());
+        MyMessagesFiles.save(messageToSend);
 
         for (ChatClientHandler clientHandler : clientHandlers) {
             if (!clientHandler.equals(this)) {
-                clientHandler.sendMessageToClient(serverMsgModelToSend);
+                clientHandler.sendMessageToClient(messageToSend);
             }
         }
     }
 
-    public void sendMessageToClient(ServerMessageModel serverMsgModelToSend) {
+    public void sendMessageToClient(ServerMessageModel messageToSend) {
         try {
-            objectOutputStream.writeObject(serverMsgModelToSend);
+            objectOutputStream.writeObject(messageToSend);
             objectOutputStream.flush();
         } catch (IOException e) {
             if (isServerOn())
@@ -209,10 +212,10 @@ public class ChatClientHandler implements Runnable {
         }
     }
 
-    public void messagingAClient(ServerMessageModel serverMsgModelToSend) {
+    public void messagingAClient(ServerMessageModel messageToSend) {
         for (ChatClientHandler clientHandler : clientHandlers) {
-            if (clientHandler.clientUsername.equals(serverMsgModelToSend.getClientModelReceiver().getUsername())) {
-                clientHandler.sendMessageToClient(serverMsgModelToSend);
+            if (clientHandler.clientUsername.equals(messageToSend.getClientModelReceiver().getUsername())) {
+                clientHandler.sendMessageToClient(messageToSend);
                 break;
             }
         }
@@ -256,13 +259,22 @@ public class ChatClientHandler implements Runnable {
         return clientHandlers;
     }
 
-    private static void clearInputSymbol() {
+    private void clearInputSymbol() {
         // To clear '>'
-        for (int i = 0; i < 12; i++)
-            System.out.print("\b");
+        if (symbolShown) {
+            for (int i = 0; i < 12; i++)
+                System.out.print("\b");
+
+            symbolShown = false;
+        }
     }
 
-    private static void showInputSymbol() {
-        System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+    private void showInputSymbol() {
+        // To show '>'
+        if (!symbolShown) {
+            System.out.print(CYAN_BOLD_BRIGHT + ">" + RESET);
+
+            symbolShown = true;
+        }
     }
 }

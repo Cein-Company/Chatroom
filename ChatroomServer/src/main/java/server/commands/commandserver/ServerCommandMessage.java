@@ -8,11 +8,14 @@ import models.servermessage.ServerMessageModel;
 
 import java.util.Arrays;
 
+import static utils.ConsoleDetail.RED_BOLD_BRIGHT;
+import static utils.ConsoleDetail.RESET;
+
 public class ServerCommandMessage {
     protected static ServerMessageModel messageCommand(String[] commandTokens) {
-        String receiver = commandTokens[1];
-
         if (commandTokens.length >= 3 && commandTokens[2].startsWith("'") && commandTokens[commandTokens.length - 1].endsWith("'")) {
+            String receiver = commandTokens[1];
+
             if (MyActiveUsersFiles.contains(receiver)) {
                 String message = join(commandTokens, commandTokens[2]);
 
@@ -41,16 +44,16 @@ public class ServerCommandMessage {
         return privateMessage;
     }
 
-    // TODO: Message is not sent to client
     private static ServerMessageModel getNotOnlineMsg(ClientModel clientAbout) {
-        return new ServerMessageModel(ServerMessageMode.FromServerAboutClient, clientAbout, "User is not online at the moment.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister,
+                clientAbout.getColoredUsername() + RED_BOLD_BRIGHT + " is not online at the moment." + RESET);
     }
 
     private static ServerMessageModel getUserNotFoundMsg() {
-        return new ServerMessageModel(ServerMessageMode.FromServer, "No such user was found in the server.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "No such user was found in the server.");
     }
 
     private static ServerMessageModel getInvalidMessageCommand() {
-        return new ServerMessageModel(ServerMessageMode.FromServer, "Please Use the /message command correctly.");
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Please Use the /message command correctly.");
     }
 }

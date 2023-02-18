@@ -30,7 +30,13 @@ public class ServerMessageModel implements Serializable {
             this.message = message;
         } else {
             this.message = message;
-            this.coloredMessage = RED_BOLD_BRIGHT + this.message + RESET;
+            if (messageMode.equals(ServerMessageMode.PMFromClientToClient) ||
+                    messageMode.equals(ServerMessageMode.PMFromClientToServer) ||
+                    messageMode.equals(ServerMessageMode.PMFromServerToClient)) {
+                this.coloredMessage = CYAN_BOLD_BRIGHT + this.message + RESET;
+            } else {
+                this.coloredMessage = RED_BOLD_BRIGHT + this.message + RESET;
+            }
             this.messageTime = getCurrentTime();
             this.messageTimeColored = WHITE_BOLD_BRIGHT + this.messageTime + RESET;
         }
@@ -92,10 +98,11 @@ public class ServerMessageModel implements Serializable {
         final String indicator = BLUE_BOLD_BRIGHT + " -> " + RESET;
         final String colon = CYAN_BOLD_BRIGHT + ": " + RESET;
         final String serverSender = RED_BOLD_BRIGHT + "SERVER" + RESET;
-        final String PrivateAnnouncement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
+        final String serverAdminSender = RED_BOLD_BRIGHT + "SERVER ADMIN" + RESET;
+        final String PMAnnouncement = RED_BOLD_BRIGHT + "PM FROM " + RESET;
 
         switch (messageMode) {
-            case FromServer, ServerShutdownMsg, ServerKickMsg, GoodbyeFromServer -> {
+            case FromServer, ServerShutdownMsg, ServerKickMsg, GoodbyeFromServer, FromServerToClient -> {
                 return messageTimeColored + indicator + serverSender + colon + coloredMessage;
             }
             case FromServerAboutClient -> {
@@ -115,10 +122,10 @@ public class ServerMessageModel implements Serializable {
                 return messageTimeColored + indicator + client.getColoredUsername() + coloredMessage;
             }
             case PMFromClientToClient, PMFromClientToServer -> {
-                return messageTimeColored + indicator + PrivateAnnouncement + clientModelSender.getColoredUsername() + colon + coloredMessage;
+                return messageTimeColored + indicator + PMAnnouncement + clientModelSender.getColoredUsername() + colon + coloredMessage;
             }
             case PMFromServerToClient -> {
-                return messageTimeColored + indicator + PrivateAnnouncement + serverSender + colon + coloredMessage;
+                return messageTimeColored + indicator + PMAnnouncement + serverAdminSender + colon + coloredMessage;
             }
             case ListFromServer, SignInteract -> {
                 return message;
@@ -146,14 +153,8 @@ public class ServerMessageModel implements Serializable {
             case FromClient -> {
                 return messageTime + indicator + clientModelSender.getUsername() + colon + message;
             }
-            case PMFromClientToClient, PMFromClientToServer -> {
-                return messageTime + indicator + PrivateAnnouncement + clientModelSender.getUsername() + colon + message;
-            }
-            case PMFromServerToClient -> {
-                return messageTime + indicator + PrivateAnnouncement + serverSender + colon + message;
-            }
             default -> {
-                return "I heard a roar in the ServerMessageModel class!";
+                return "I heard a roar in the ServerMessageModel class! -> " + message + " -> " + messageMode;
             }
         }
     }

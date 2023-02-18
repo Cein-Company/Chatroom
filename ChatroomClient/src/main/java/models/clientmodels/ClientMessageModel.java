@@ -15,9 +15,8 @@ public class ClientMessageModel implements Serializable {
     private ClientModel requestingClient;
     private final boolean isCommand;
     private final boolean isExitCommand;
-    private ClientMessageMode mode;
+    private final ClientMessageMode mode;
 
-    // TODO: Refactor the constructors
     public ClientMessageModel(ClientModel sender, String message) {
         this.message = message;
         this.coloredMessage = WHITE_BOLD_BRIGHT + this.message + RESET;
