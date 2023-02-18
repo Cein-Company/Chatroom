@@ -20,10 +20,12 @@ public class ServerCommandLog {
                 logColored.append(messageModel.getFullMessage()).append("\n");
             for (ServerMessageModel messageModel : MyMessagesFiles.getAllMessagesDuplicate())
                 logColorless.append(messageModel.getColorlessMessage()).append("\n");
-        } else
-            return geEmptyHistoryMsg();
+        }
 
         if (commandTokens.length == 3 && commandTokens[1].toLowerCase(Locale.ROOT).equals("-s")) {
+            if (MyMessagesFiles.getAllMessagesDuplicate().isEmpty())
+                return getEmptyHistoryMsg();
+
             try {
                 String path = commandTokens[2].endsWith("/") ?
                         commandTokens[2] + "log.txt" : commandTokens[2] + "/log.txt";
@@ -40,11 +42,18 @@ public class ServerCommandLog {
                 return getExceptionMsg(exception);
             }
         } else if (commandTokens.length == 2 && commandTokens[1].toLowerCase(Locale.ROOT).equals("-c")) {
+            if (MyMessagesFiles.getAllMessagesDuplicate().isEmpty())
+                return getEmptyHistoryMsg();
+
             MyMessagesFiles.clear();
 
             return getLogCleared();
-        } else if (commandTokens.length == 1)
+        } else if (commandTokens.length == 1) {
+            if (MyMessagesFiles.getAllMessagesDuplicate().isEmpty())
+                return getEmptyHistoryMsg();
+
             return getLogMsg(logColored);
+        }
         else
             return getInvalidLogCommandMsg();
     }
@@ -57,7 +66,7 @@ public class ServerCommandLog {
         return new ServerMessageModel(ServerMessageMode.ToAdminister, "The path '" + path + "' does not exist.");
     }
 
-    private static ServerMessageModel geEmptyHistoryMsg() {
+    private static ServerMessageModel getEmptyHistoryMsg() {
         return new ServerMessageModel(ServerMessageMode.ToAdminister, "Message History is empty.");
     }
 

@@ -14,10 +14,16 @@ public class ClientCommandHelp {
     protected static final String messageUserDescription = WHITE_BOLD_BRIGHT + "To send a private message to a user" + RESET;
     protected static final String messageServerCmd = CYAN_BOLD_BRIGHT + "`/message server 'Your message'`" + RESET;
     protected static final String messageServerDescription = WHITE_BOLD_BRIGHT + "To send a private message to the server administer" + RESET;
-    protected static final String pollJoinCmd = CYAN_BOLD_BRIGHT + "`/poll -j pollNumber`" + RESET;
-    protected static final String pollJoinDescription = WHITE_BOLD_BRIGHT + "To accept joining a poll" + RESET;
-    protected static final String pollDenyCmd = CYAN_BOLD_BRIGHT + "`/poll -d pollNumber`" + RESET;
-    protected static final String pollDenyDescription = WHITE_BOLD_BRIGHT + "To deny joining a poll" + RESET;
+    protected static final String pollCmd = CYAN_BOLD_BRIGHT + """
+            `/poll -join uniqueName -v optionIndex`
+            
+            `/poll -show uniqueName`
+            `/poll -show pollID`
+            
+            `/poll -show-all`
+            `/poll -show-all-detail`
+            """ + RESET;
+    protected static final String pollDescription = WHITE_BOLD_BRIGHT + "To join or see Chatroom Polls." + RESET;
 
 
     protected static ServerMessageModel helpCommand(String[] commandTokens) {
@@ -29,9 +35,10 @@ public class ClientCommandHelp {
 
     private static String helpList() {
         return WHITE_BOLD_BRIGHT + "Here's a list of available commands:" + RESET + "\n\n"
-                + helpCmd + indicator + helpDescription + "\n"
+                + helpCmd + indicator + helpDescription + "\n\n"
                 + messageUserCmd + indicator + messageUserDescription + "\n"
-                + messageServerCmd + indicator + messageServerDescription + "\n";
+                + messageServerCmd + indicator + messageServerDescription + "\n\n"
+                + pollCmd + indicator + pollDescription + "\n";
     }
 
     private static ServerMessageModel getHelpList() {

@@ -176,7 +176,7 @@ public class ChatClientHandler implements Runnable {
             case PMFromClientToClient -> messagingAClient(message);
             default -> {
                 System.out.println("I heard a roar in ChatClientHandler Class!");
-                System.out.println("-> " + message + " -> " + message.getMessageMode());
+                System.out.println("-> " + message.getFullMessage() + " -> " + message.getMessageMode());
             }
         }
     }

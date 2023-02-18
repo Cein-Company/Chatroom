@@ -16,7 +16,7 @@ public class CommandHandlerServer {
             case "/kick" -> ServerCommandKick.kickCommand(commandTokens);
             case "/ban" -> ServerCommandBan.banCommand(commandTokens);
             case "/message" -> ServerCommandMessage.messageCommand(commandTokens);
-            case "/poll" -> ServerCommandPoll.messageCommand(commandTokens);
+            case "/poll" -> ServerCommandPoll.pollCommand(commandTokens);
             case "/shutdown" -> ServerCommandShutdown.closeCommand();
             default -> getServerInvalidMsgModel();
         };

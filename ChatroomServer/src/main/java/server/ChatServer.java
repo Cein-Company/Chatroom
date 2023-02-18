@@ -17,9 +17,9 @@ import static server.ChatClientHandler.getClientHandlers;
 import static utils.ConsoleDetail.*;
 
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
-//       Sign-in, Login, New Message, Commands, Exits
+//       Sign-in, Login, New Message, Commands, Exits.
 
-// TODO: Message Object system is confusing and ugly code.
+// TODO: Current Message Model system is confusing and ugly code.
 //  Needs to be rebuilt.
 public class ChatServer {
     private static ServerConfig config;

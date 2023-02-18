@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PollOptionModel implements Serializable {
-
     private final String content;
     private final int index;
     private int selectedCount = 0;
@@ -21,18 +20,13 @@ public class PollOptionModel implements Serializable {
 
     public static List<PollOptionModel> generateOptions(String[] contents) {
         List<PollOptionModel> polls = new ArrayList<>();
-        for (int i = 0; i < contents.length; i++) {
+        for (int i = 0; i < contents.length; i++)
             polls.add(factory(contents[i], i + 1));
-        }
+
         return polls;
     }
 
     public void selected() {selectedCount++;}
-
-    @Override
-    public String toString() {
-        return content;
-    }
 
     public String getContent() {
         return content;
@@ -44,5 +38,10 @@ public class PollOptionModel implements Serializable {
 
     public int getSelectedCount() {
         return selectedCount;
+    }
+
+    @Override
+    public String toString() {
+        return content;
     }
 }

@@ -1,5 +1,6 @@
 package files;
 
+import models.clientmodels.ClientModel;
 import models.poll.PollModel;
 import models.poll.PollStatus;
 import utils.ArraysHelper;
@@ -13,7 +14,6 @@ import java.util.UUID;
 import static files.Files.polls;
 
 public class MyPollsFile {
-
     private static final Path pollPath =
             Paths.get(System.getProperty("user.dir"), "ChatroomFiles", "Polls.txt");
 
@@ -34,11 +34,11 @@ public class MyPollsFile {
         }
     }
 
-    public static PollModel getPoll(String detail) {
+    public static PollModel getPoll(String identifier) {
         readPolls();
         try {
             return polls.stream()
-                    .filter(p -> p.getUniqueName().equals(detail) || p.getPollId().toString().equals((detail)))
+                    .filter(p -> p.getUniqueName().equals(identifier) || p.getPollID().toString().equals((identifier)))
                     .findFirst()
                     .get();
         } catch (Exception exception) {
@@ -58,29 +58,31 @@ public class MyPollsFile {
         writePolls();
     }
 
-    public static boolean votePoll(UUID clientId, String detail, int index) {
-        PollModel poll = getPoll(detail);
-        if (poll == null)
-            return false;
-        poll.vote(clientId, index);
+    public static void votePoll(ClientModel clientModel, PollModel poll, int optionIndex) {
+        poll.vote(clientModel, optionIndex);
+
         writePolls();
-        return true;
     }
 
     public static void remove(PollModel poll) {
         readPolls();
-        polls.removeIf(e -> e.getPollId() == poll.getPollId() || e.getUniqueName() == poll.getUniqueName());
+        polls.removeIf(e -> e.getPollID() == poll.getPollID() || e.getUniqueName() == poll.getUniqueName());
         writePolls();
     }
 
-    public static boolean changePollStatus(PollStatus status, String detail) {
-        PollModel poll = getPoll(detail);
-        if (poll == null)
-            return false;
-
+    public static void changePollStatus(PollStatus status, PollModel poll) {
         poll.setStatus(status);
         writePolls();
-        return true;
     }
 
+    public static boolean containsUName(String uniqueName) {
+        readPolls();
+
+        for (PollModel poll : polls) {
+            if (poll.getUniqueName().equals(uniqueName))
+                return true;
+        }
+
+        return false;
+    }
 }

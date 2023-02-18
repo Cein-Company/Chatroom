@@ -9,97 +9,206 @@ import models.servermessage.ServerMessageModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static utils.ConsoleDetail.*;
 
 public class ServerCommandPoll {
-    protected static ServerMessageModel messageCommand(String[] commandTokens) {
+    protected static ServerMessageModel pollCommand(String[] commandTokens) {
         try {
-            switch (commandTokens[1].replaceFirst("-", "")) {
-                case "create" -> {
-                    StringBuilder title = new StringBuilder();
-                    String uniqueName = null;
-                    List<PollOptionModel> options = null;
-                    for (int i = 0; i < commandTokens.length; i++) {
-                        String c = commandTokens[i];
-                        if (c.charAt(0) == '-') {
-                            switch (c) {
-                                case "-t" -> {
-                                    if (commandTokens[i + 1].charAt(0) == '-')
-                                        continue;
-                                    title = new StringBuilder();
-                                    for (int j = i + 1; j < commandTokens.length; j++) {
-                                        if (commandTokens[j].charAt(0) == '-')
-                                            break;
-                                        title.append(commandTokens[j]).append(" ");
-                                    }
-                                }
-                                case "-o" -> {
-                                    options = new ArrayList<>();
-                                    for (int j = i + 1; j < commandTokens.length; j++) {
-                                        if (commandTokens[j].charAt(0) == '-')
-                                            break;
-                                        options.add(PollOptionModel.factory(commandTokens[j], options.size()));
-                                    }
-                                }
-                                case "-uname" -> uniqueName = commandTokens[i + 1];
-                            }
-                        }
-                    }
-                    if (title == null)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Title can't be empty" + RESET);
-                    if (options == null)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Options can't be empty" + RESET);
-                    if (uniqueName == null)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Unique name can't be empty" + RESET);
-                    PollModel poll = new PollModel(title.toString(), options, uniqueName);
-                    MyPollsFile.addPoll(poll);
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, poll.show());
-
+            switch (commandTokens[1].toLowerCase(Locale.ROOT)) {
+                case "-create" -> {
+                    return createPoll(commandTokens);
                 }
-                case "show" -> {
-                    String detail = commandTokens[2];
-                    PollModel poll = MyPollsFile.getPoll(detail);
-                    if (poll == null)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED_BRIGHT + "Couldn't find any poll with input information" + RESET);
-
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, poll.show());
-
+                case "-show" -> {
+                    return showPoll(commandTokens);
                 }
-                case "show-all" -> {
-                    ArrayList<PollModel> polls = MyPollsFile.allPolls();
-                    if (polls == null || polls.size() == 0)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED_BRIGHT + "There isn't any poll" + RESET);
-                    StringBuilder pollsToString = new StringBuilder();
-                    for (PollModel poll : polls) {
-                        pollsToString.append(poll.show());
-                    }
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, pollsToString.toString());
-
+                case "-show-all" -> {
+                    return showAllPolls();
                 }
-                case "show-all-detail" -> {
-                    ArrayList<PollModel> polls = MyPollsFile.allPolls();
-                    if (polls == null || polls.size() == 0)
-                        return new ServerMessageModel(ServerMessageMode.ToAdminister, RED_BRIGHT + "There isn't any poll" + RESET);
-                    StringBuilder details = new StringBuilder("\n");
-                    for (PollModel poll : polls) {
-                        details.append(GREEN_BOLD + "Unique Name : " + WHITE_BRIGHT).append(poll.getUniqueName()).append("\t\t")
-                                .append(GREEN_BOLD).append("Poll Id : ")
-                                .append(WHITE_BRIGHT).append(poll.getPollId()).append("\n");
-                    }
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, details.toString());
+                case "-show-all-detail" -> {
+                    return showAllPollsDetails();
                 }
-                case "end-poll" -> {
-                    String detail = commandTokens[2];
-                    boolean result = MyPollsFile.changePollStatus(PollStatus.End, detail);
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, ((result) ? GREEN_BRIGHT + "Poll : " + detail + " status changed to end " + RESET : RED_BRIGHT + "FAILURE" + RESET));
+                case "-end" -> {
+                    return endPoll(commandTokens);
                 }
                 default -> {
-                    return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Invalid Argument !" + RESET);
+                    return getInvalidSecondArg();
                 }
             }
         } catch (IndexOutOfBoundsException ex) {
-            return new ServerMessageModel(ServerMessageMode.ToAdminister, RED + "Use command correctly !" + RESET);
+            return getInvalidPollCommand();
         }
+    }
+
+    private static ServerMessageModel createPoll(String[] commandTokens) {
+        StringBuilder title = new StringBuilder();
+        String uniqueName = null;
+        List<PollOptionModel> options = new ArrayList<>();
+
+        for (int i = 2; i < commandTokens.length; i++) {
+            String arg = commandTokens[i];
+
+            if (arg.charAt(0) == '-') {
+                switch (arg.toLowerCase(Locale.ROOT)) {
+                    case "-t" -> {
+                        if (commandTokens[i + 1].charAt(0) == '-')
+                            return getTitleCantBeEmpty();
+
+                        for (int j = i + 1; j < commandTokens.length; j++) {
+                            if (commandTokens[j].charAt(0) == '-')
+                                break;
+
+                            title.append(commandTokens[j]).append(" ");
+                        }
+                    }
+                    case "-o" -> {
+                        if (commandTokens[i + 1].charAt(0) == '-')
+                            return getOptionCantBeEmpty();
+
+                        StringBuilder option = new StringBuilder();
+                        for (int j = i + 1; j < commandTokens.length; j++) {
+                            if (commandTokens[j].charAt(0) == '-')
+                                break;
+
+                            option.append(commandTokens[j]).append(" ");
+                        }
+
+                        options.add(PollOptionModel.factory(option.toString().trim(), options.size()));
+                    }
+                    case "-uname" -> {
+                        if (commandTokens.length == i + 1)
+                            return getUNameCantBeEmpty();
+
+                        uniqueName = commandTokens[i + 1];
+
+                        if (uniqueName.length() >= 22) {
+                            return getUNameTooBigMsg();
+                        }
+
+                        if (MyPollsFile.containsUName(uniqueName))
+                            return getCantUseDuplicateUNameMsg();
+                    }
+                }
+            }
+        }
+
+        if (title.isEmpty())
+            return getTitleCantBeEmpty();
+
+        if (options.isEmpty())
+            return getOptionCantBeEmpty();
+
+        if (options.size() == 1)
+            return getOptionCantBeOne();
+
+        if (uniqueName == null)
+            return getUNameCantBeEmpty();
+
+        PollModel poll = new PollModel(title.toString(), options, uniqueName);
+        MyPollsFile.addPoll(poll);
+
+        return new ServerMessageModel(ServerMessageMode.ListFromServer, poll.show());
+    }
+
+    private static ServerMessageModel showPoll(String[] commandTokens) {
+        String identifier = commandTokens[2];
+        PollModel poll = MyPollsFile.getPoll(identifier);
+
+        if (poll == null)
+            return getPollNotFound();
+
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, poll.show());
+    }
+
+    private static ServerMessageModel showAllPolls() {
+        ArrayList<PollModel> polls = MyPollsFile.allPolls();
+
+        if (polls == null || polls.size() == 0)
+            return getNoPollsMsg();
+
+        StringBuilder pollsToString = new StringBuilder();
+        for (PollModel poll : polls)
+            pollsToString.append(poll.show());
+
+        return new ServerMessageModel(ServerMessageMode.ListFromServer, pollsToString.toString());
+    }
+
+    private static ServerMessageModel showAllPollsDetails() {
+        ArrayList<PollModel> polls = MyPollsFile.allPolls();
+
+        if (polls == null || polls.size() == 0)
+            return getNoPollsMsg();
+
+        StringBuilder details = new StringBuilder("\n");
+        for (PollModel poll : polls) {
+            details
+                    .append(GREEN_BOLD_BRIGHT + "Unique Name : ")
+                    .append(WHITE_BOLD_BRIGHT).append(poll.getUniqueName()).append("\n\t")
+                    .append(BLUE_BOLD_BRIGHT).append("Poll ID : ")
+                    .append(WHITE_BOLD_BRIGHT).append(poll.getPollID()).append("\n");
+        }
+
+        return new ServerMessageModel(ServerMessageMode.ListFromServer, details.toString());
+    }
+
+    private static ServerMessageModel endPoll(String[] commandTokens) {
+        String identifier = commandTokens[2];
+        PollModel poll = MyPollsFile.getPoll(identifier);
+
+        if (poll == null)
+            return getPollNotFound();
+
+        MyPollsFile.changePollStatus(PollStatus.End, poll);
+
+        return getPollEndedMsg(poll);
+    }
+
+    private static ServerMessageModel getTitleCantBeEmpty() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Poll Title cannot be empty.");
+    }
+
+    private static ServerMessageModel getOptionCantBeEmpty() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Poll Options cannot be empty.");
+    }
+
+    private static ServerMessageModel getOptionCantBeOne() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "There cannot be only one options in poll.");
+    }
+
+    private static ServerMessageModel getUNameCantBeEmpty() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Poll Unique Name cannot be empty.");
+    }
+
+    private static ServerMessageModel getUNameTooBigMsg() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister,
+                "Poll Unique Name cannot be bigger than 22 letters.");
+    }
+
+    private static ServerMessageModel getCantUseDuplicateUNameMsg() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister,
+                "This Unique Name is already used for another poll.");
+    }
+
+    private static ServerMessageModel getPollNotFound() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "No such poll was found.");
+    }
+
+    private static ServerMessageModel getNoPollsMsg() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "No polls exists in the chatroom yet.");
+    }
+
+    private static ServerMessageModel getPollEndedMsg(PollModel poll) {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister,
+                poll.getUniqueName() + " poll has ended. " +
+                        "The result was: '" + poll.getResult() + "'.");
+    }
+
+    private static ServerMessageModel getInvalidSecondArg() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Invalid Second Argument.");
+    }
+
+    private static ServerMessageModel getInvalidPollCommand() {
+        return new ServerMessageModel(ServerMessageMode.ToAdminister, "Please Use the /poll command correctly.");
     }
 }
