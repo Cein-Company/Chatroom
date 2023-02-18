@@ -19,6 +19,10 @@ public class ServerCommandHelp {
     protected static final String membersDescription = WHITE_BOLD_BRIGHT + "To see a list of all chatroom members" + RESET;
     protected static final String onlineMembersCmd = CYAN_BOLD_BRIGHT + "`/members -o`" + RESET;
     protected static final String onlineMembersDescription = WHITE_BOLD_BRIGHT + "To see a list of all online chatroom members" + RESET;
+    protected static final String messageUserCmd = CYAN_BOLD_BRIGHT + "`/message username 'Your message'`" + RESET;
+    protected static final String messageUserDescription = WHITE_BOLD_BRIGHT + "To send a private message to a user" + RESET;
+    protected static final String messageAllCmd = CYAN_BOLD_BRIGHT + "`/message all 'Your message'`" + RESET;
+    protected static final String messageAllDescription = WHITE_BOLD_BRIGHT + "To send a message to everyone in Chatroom" + RESET;
     protected static final String kickCmd = CYAN_BOLD_BRIGHT + "`/kick username`" + RESET;
     protected static final String kickDescription = WHITE_BOLD_BRIGHT + "To kick a user from the chatroom temporarily" + RESET;
     protected static final String banCmd = CYAN_BOLD_BRIGHT + "`/ban username`" + RESET;
@@ -39,7 +43,7 @@ public class ServerCommandHelp {
             `/poll -end uniqueName`
             `/poll -end pollID`
             """ + RESET;
-    protected static final String pollDescription = WHITE_BOLD_BRIGHT + "To create or see Chatroom Polls." + RESET;
+    protected static final String pollDescription = WHITE_BOLD_BRIGHT + "To create or see Chatroom Polls" + RESET;
 
     public static ServerMessageModel helpCommand(String[] commandTokens) {
         if (commandTokens.length == 1) {
@@ -56,10 +60,12 @@ public class ServerCommandHelp {
                 + logClearCmd + indicator + logClearDescription + "\n\n"
                 + membersCmd + indicator + membersDescription + "\n"
                 + onlineMembersCmd + indicator + onlineMembersDescription + "\n\n"
+                + messageUserCmd + indicator + messageUserDescription + "\n"
+                + messageAllCmd + indicator + messageAllDescription + "\n\n"
                 + kickCmd + indicator + kickDescription + "\n"
                 + banCmd + indicator + banDescription + "\n"
                 + unBanCmd + indicator + unBanDescription + "\n\n"
-                + pollCmd + indicator + pollDescription + "\n\n"
+                + pollCmd + "\t\t\t" + indicator + pollDescription + "\n\n"
                 + shutdownCmd + indicator + shutdownDescription + "\n";
     }
 

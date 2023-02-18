@@ -23,7 +23,9 @@ public class ClientCommandHelp {
             `/poll -show-all`
             `/poll -show-all-detail`
             """ + RESET;
-    protected static final String pollDescription = WHITE_BOLD_BRIGHT + "To join or see Chatroom Polls." + RESET;
+    protected static final String pollDescription = WHITE_BOLD_BRIGHT + "To join or see Chatroom Polls" + RESET;
+    protected static final String exitCmd = CYAN_BOLD_BRIGHT + "`/exit`" + RESET;
+    protected static final String exitDescription = WHITE_BOLD_BRIGHT + "To exit the chatroom" + RESET;
 
 
     protected static ServerMessageModel helpCommand(String[] commandTokens) {
@@ -38,7 +40,8 @@ public class ClientCommandHelp {
                 + helpCmd + indicator + helpDescription + "\n\n"
                 + messageUserCmd + indicator + messageUserDescription + "\n"
                 + messageServerCmd + indicator + messageServerDescription + "\n\n"
-                + pollCmd + indicator + pollDescription + "\n";
+                + pollCmd + "\t\t\t" + indicator + pollDescription + "\n\n"
+                + exitCmd + indicator + exitDescription + "\n";
     }
 
     private static ServerMessageModel getHelpList() {
