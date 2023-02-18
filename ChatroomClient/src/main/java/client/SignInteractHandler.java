@@ -27,9 +27,6 @@ public class SignInteractHandler {
     private JsonRequestResponse listener;
     private boolean isServerOn;
 
-    // TODO: Why is isKicked here?
-    private boolean isKicked;
-
     private boolean initialConnectionResponse;
 
     public SignInteractHandler() {
@@ -46,20 +43,6 @@ public class SignInteractHandler {
                         response = (ServerMessageModel) objectInputStream.readObject();
 
                         if (response != null) {
-                            if (response.getMessageMode().equals(ServerMessageMode.ServerShutdownMsg)) {
-                                isServerOn = false;
-                                System.out.println(response.getFullMessage());
-                                closeEverything();
-                                break;
-                            }
-
-                            if (response.getMessageMode().equals(ServerMessageMode.ServerKickMsg)) {
-                                isKicked = true;
-                                System.out.println(response.getFullMessage());
-                                closeEverything();
-                                break;
-                            }
-
                             checkResponse(response);
                         }
                     }
@@ -125,7 +108,6 @@ public class SignInteractHandler {
                 isServerOn = true;
                 initialConnectionResponse = true;
 
-                listenForMessage();
                 break;
             } catch (IOException e) {
                 System.out.println(RED_BOLD_BRIGHT + "AN ERROR OCCURRED DURING CONNECTING TO SERVER" + RESET);
@@ -153,8 +135,10 @@ public class SignInteractHandler {
         // /signup username password
         ClientMessageModel signUpRequest = new ClientMessageModel(ClientMessageMode.SIGNING_IN, newClient);
 
-        if (initialConnectionResponse && socket.isConnected())
+        if (initialConnectionResponse && socket.isConnected()) {
             sendRequest(signUpRequest);
+            listenForMessage();
+        }
         else
             setUpSocket();
 
@@ -186,8 +170,10 @@ public class SignInteractHandler {
     public void login(InteractiveInterface<ClientModel> result, String username, String password) {
         ClientMessageModel loginRequest = new ClientMessageModel(ClientMessageMode.LOGIN_IN, ClientModel.factory(username, password));
 
-        if (initialConnectionResponse && socket.isConnected())
+        if (initialConnectionResponse && socket.isConnected()) {
             sendRequest(loginRequest);
+            listenForMessage();
+        }
         else
             setUpSocket();
 

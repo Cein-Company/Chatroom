@@ -230,19 +230,6 @@ public class ChatClientHandler implements Runnable {
         MyActiveUsersFiles.remove(this.clientUsername);
         clientHandlers.remove(this);
 
-        if (!isServerOn()) {
-            ServerMessageModel shutdownMessage =
-                    new ServerMessageModel(ServerMessageMode.ServerShutdownMsg,
-                            "SERVER WAS SHUTDOWN BY THE ADMINISTRATOR.");
-
-            try {
-                objectOutputStream.writeObject(shutdownMessage);
-                objectOutputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         try {
             if (objectOutputStream != null)
                 objectOutputStream.close();

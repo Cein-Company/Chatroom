@@ -181,10 +181,5 @@ public class ChatClientCLI {
 
     public static void main(String[] args) {
         makeInitialConnection();
-
-        // TODO: The program's inability to close by itself
-        //  and the need for `System.exit(0)` could mean that
-        //  there are still unclosed threads somewhere.
-        System.exit(0);
     }
 }
