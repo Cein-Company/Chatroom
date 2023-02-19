@@ -18,15 +18,15 @@ public class ClientCommandMessage {
         if (commandTokens.length >= 3 && commandTokens[2].startsWith("'") && commandTokens[commandTokens.length - 1].endsWith("'")) {
             String receiver = commandTokens[1];
 
-            if (MyActiveUsersFiles.contains(receiver) || receiver.toLowerCase(Locale.ROOT).equals("server")) {
+            if (MyActiveUsersFiles.contains(receiver) || receiver.toLowerCase(Locale.ROOT).equals("admin")) {
                 String message = join(commandTokens, commandTokens[2]);
 
-                if (!receiver.toLowerCase(Locale.ROOT).equals("server") &&
+                if (!receiver.toLowerCase(Locale.ROOT).equals("admin") &&
                         MyUsersFiles.getUserByName(receiver).getUsername().equals(clientMessage.getSender().getUsername()))
                     return getCantPMYourselfMsg();
 
-                return receiver.toLowerCase(Locale.ROOT).equals("server") ?
-                        getPMToServer(clientMessage, message) : getPMToClient(clientMessage, receiver, message);
+                return receiver.toLowerCase(Locale.ROOT).equals("admin") ?
+                        getPMToAdmin(clientMessage, message) : getPMToClient(clientMessage, receiver, message);
             } else if (MyUsersFiles.contains(receiver))
                 return getNotOnlineMsg(MyUsersFiles.getUserByName(receiver));
             else
@@ -44,8 +44,8 @@ public class ClientCommandMessage {
                         tokens.length));
     }
 
-    private static ServerMessageModel getPMToServer(ClientMessageModel clientMessage, String message) {
-        return new ServerMessageModel(ServerMessageMode.PMFromClientToServer, clientMessage, message);
+    private static ServerMessageModel getPMToAdmin(ClientMessageModel clientMessage, String message) {
+        return new ServerMessageModel(ServerMessageMode.PMFromClientToAdmin, clientMessage, message);
     }
 
     private static ServerMessageModel getPMToClient(ClientMessageModel clientMessage, String receiver, String message) {

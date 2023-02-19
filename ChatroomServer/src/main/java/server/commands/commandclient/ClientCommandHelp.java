@@ -12,8 +12,8 @@ public class ClientCommandHelp {
     protected static final String helpDescription = WHITE_BOLD_BRIGHT + "To see a list of available commands" + RESET;
     protected static final String messageUserCmd = CYAN_BOLD_BRIGHT + "`/message username 'Your message'`" + RESET;
     protected static final String messageUserDescription = WHITE_BOLD_BRIGHT + "To send a private message to a user" + RESET;
-    protected static final String messageServerCmd = CYAN_BOLD_BRIGHT + "`/message server 'Your message'`" + RESET;
-    protected static final String messageServerDescription = WHITE_BOLD_BRIGHT + "To send a private message to the server administer" + RESET;
+    protected static final String messageAdminCmd = CYAN_BOLD_BRIGHT + "`/message admin 'Your message'`" + RESET;
+    protected static final String messageAdminDescription = WHITE_BOLD_BRIGHT + "To send a private message to the server administer" + RESET;
     protected static final String pollCmd = CYAN_BOLD_BRIGHT + """
             `/poll -join uniqueName -v optionIndex`
             
@@ -39,7 +39,7 @@ public class ClientCommandHelp {
         return WHITE_BOLD_BRIGHT + "Here's a list of available commands:" + RESET + "\n\n"
                 + helpCmd + indicator + helpDescription + "\n\n"
                 + messageUserCmd + indicator + messageUserDescription + "\n"
-                + messageServerCmd + indicator + messageServerDescription + "\n\n"
+                + messageAdminCmd + indicator + messageAdminDescription + "\n\n"
                 + pollCmd + "\t\t\t" + indicator + pollDescription + "\n\n"
                 + exitCmd + indicator + exitDescription + "\n";
     }

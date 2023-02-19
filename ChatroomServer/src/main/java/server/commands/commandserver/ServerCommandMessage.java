@@ -26,7 +26,7 @@ public class ServerCommandMessage {
             }
 
             if (MyActiveUsersFiles.contains(receiver))
-                return getPMFromServer(MyUsersFiles.getUserByName(receiver), message);
+                return getPMFromAdmin(MyUsersFiles.getUserByName(receiver), message);
             else if (MyUsersFiles.contains(receiver))
                 return getNotOnlineMsg(MyUsersFiles.getUserByName(receiver));
             else
@@ -53,8 +53,8 @@ public class ServerCommandMessage {
                 RED_BOLD_BRIGHT + "There are no online users in the Chatroom." + RESET);
     }
 
-    private static ServerMessageModel getPMFromServer(ClientModel receiver, String message) {
-        ServerMessageModel privateMessage = new ServerMessageModel(ServerMessageMode.PMFromServerToClient, message);
+    private static ServerMessageModel getPMFromAdmin(ClientModel receiver, String message) {
+        ServerMessageModel privateMessage = new ServerMessageModel(ServerMessageMode.PMFromAdminToClient, message);
         privateMessage.setClientModelReceiver(receiver);
 
         return privateMessage;

@@ -168,8 +168,8 @@ public class ChatClientHandler implements Runnable {
             case FromClient -> broadcastMessageToAll(message);
             case FromServerAboutClient -> broadcastMessageToOthers(message);
             case FromServer, ListFromServer, SignInteract,
-                    FromServerToClient, PMFromServerToClient -> sendMessageToClient(message);
-            case PMFromClientToServer -> {
+                    FromServerToClient, PMFromAdminToClient -> sendMessageToClient(message);
+            case PMFromClientToAdmin -> {
                 clearInputSymbol();
                 System.out.println(message.getFullMessage());
             }

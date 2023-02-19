@@ -22,7 +22,7 @@ public class ServerCommandHelp {
     protected static final String messageUserCmd = CYAN_BOLD_BRIGHT + "`/message username 'Your message'`" + RESET;
     protected static final String messageUserDescription = WHITE_BOLD_BRIGHT + "To send a private message to a user" + RESET;
     protected static final String messageAllCmd = CYAN_BOLD_BRIGHT + "`/message all 'Your message'`" + RESET;
-    protected static final String messageAllDescription = WHITE_BOLD_BRIGHT + "To send a message to everyone in Chatroom" + RESET;
+    protected static final String messageAllDescription = WHITE_BOLD_BRIGHT + "To send a message to everyone in the Chatroom" + RESET;
     protected static final String kickCmd = CYAN_BOLD_BRIGHT + "`/kick username`" + RESET;
     protected static final String kickDescription = WHITE_BOLD_BRIGHT + "To kick a user from the chatroom temporarily" + RESET;
     protected static final String banCmd = CYAN_BOLD_BRIGHT + "`/ban username`" + RESET;

@@ -80,14 +80,14 @@ public class ChatClientCLI {
 
         if (username.isEmpty()) {
             System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
-                    "Please Try again." + RESET);
+                    "Please Try Again." + RESET);
             signUp();
             return;
         }
 
-        if (username.toLowerCase(Locale.ROOT).equals("all")) {
-            System.out.println(RED_BOLD_BRIGHT + "You can't use an empty 'all' as Username.\n" +
-                    "Please Try again." + RESET);
+        if (username.toLowerCase(Locale.ROOT).equals("all") || username.toLowerCase(Locale.ROOT).equals("admin")) {
+            System.out.println(RED_BOLD_BRIGHT + "You can't use '" + username + "' as Username.\n" +
+                    "Please Try Again." + RESET);
             signUp();
             return;
         }
@@ -109,7 +109,7 @@ public class ChatClientCLI {
 
         if (password.isEmpty()) {
             System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Password.\n" +
-                    "Please Try again." + RESET);
+                    "Please Try Again." + RESET);
             signUp();
             return;
         }
@@ -143,7 +143,7 @@ public class ChatClientCLI {
 
         if (username.isEmpty()) {
             System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
-                    "Please Try again." + RESET);
+                    "Please Try Again." + RESET);
             login();
             return;
         }
@@ -158,7 +158,7 @@ public class ChatClientCLI {
 
         if (password.isEmpty()) {
             System.out.println(RED_BOLD_BRIGHT + "You can't use an empty value as Username.\n" +
-                    "Please Try again." + RESET);
+                    "Please Try Again." + RESET);
             login();
             return;
         }

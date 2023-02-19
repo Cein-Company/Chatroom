@@ -19,9 +19,13 @@ import static utils.ConsoleDetail.*;
 // TODO: Idea: Set up Unit or Integration Testing of the Chatroom Components:
 //       Sign-in, Login, New Message, Commands, Exits.
 
-// TODO: Current Message Model system,
-//  and Message handling system,
+// TODO: Current Message Model system, and Message handling system,
 //  is confusing and ugly code. Needs to be rebuilt.
+//  The ever growing Message Modes led to way too many constructors and getFullMessages.
+//  When I made the model, I had no idea of the monstrosity that it would become. God forgive me for my sins.
+
+// TODO: Can a mechanism be created so that if sever was shutdown unexpectedly,
+//  the Admin gets informed on next sever opening?
 public class ChatServer {
     private static ServerConfig config;
     private static ServerSocket serverSocket;
@@ -75,7 +79,7 @@ public class ChatServer {
 
                     ServerMessageModel commandRespond = CommandHandlerServer.commandHandler(scannedCommand);
 
-                    if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromServerToClient)) {
+                    if (commandRespond.getMessageMode().equals(ServerMessageMode.PMFromAdminToClient)) {
                         System.out.println(commandRespond.getFullMessage());
 
                         for (ChatClientHandler clientHandler : getClientHandlers()) {

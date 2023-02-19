@@ -13,9 +13,9 @@ public enum ServerMessageMode implements Serializable {
     ToAdministerAboutAClient,
     FromServerAdmin,
     FromServerToClient,
-    PMFromServerToClient,
+    PMFromAdminToClient,
     PMFromClientToClient,
-    PMFromClientToServer,
+    PMFromClientToAdmin,
     ListFromServer,
     SignInteract
 }
